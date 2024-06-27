@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import Papa from "papaparse";
+import Papa, { LocalFile, ParseResult } from "papaparse";
 import "./App.css";
 import { ModeToggle } from "./components/mode-toggle";
-import { ParsedCSV } from "./App.type";
 import DataTable from "./components/dataTable/DataTable";
 
 function App() {
@@ -14,8 +13,8 @@ function App() {
     if (event.target.files) {
       const file = event.target.files[0];
       if (file) {
-        Papa.parse(file, {
-          complete: (results: ParsedCSV) => {
+        Papa.parse<File, Papa.LocalFile>(file, {
+          complete: (results: ParseResult<File>) => {
             console.log(results);
             if (results.meta.fields) {
               setHeaders(results.meta.fields);
