@@ -5,9 +5,15 @@ from dotenv import load_dotenv
 import os
 import psycopg2
 
+from routes.fileapi import FileHandler
+
 load_dotenv()
 
+UPLOAD_FOLDER = "data"
+
 app = Flask(__name__)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
 api = Api(app)
 
 conn = psycopg2.connect(
@@ -81,7 +87,7 @@ class TodoList(Resource):
 ##
 api.add_resource(TodoList, "/todos")
 api.add_resource(Todo, "/todos/<todo_id>")
-
+api.add_resource(FileHandler, "/upload")
 
 if __name__ == "__main__":
     app.run(debug=True)
