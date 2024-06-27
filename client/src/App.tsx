@@ -1,38 +1,48 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import React, { useState } from "react";
+import Papa, { ParseResult } from "papaparse";
 import "./App.css";
 import { ModeToggle } from "./components/mode-toggle";
+import DataTable from "./components/dataTable/DataTable";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [headers, setHeaders] = useState<Array<string>>([]);
+  const [body, setBody] = useState<Array<object>>([]);
+  const [showTable, setShowTable] = useState<boolean>(false);
+
+  const csvUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const file = event.target.files[0];
+      if (file) {
+        Papa.parse<File, Papa.LocalFile>(file, {
+          complete: (results: ParseResult<File>) => {
+            console.log(results);
+            if (results.meta.fields) {
+              setHeaders(results.meta.fields);
+            }
+            setBody(results.data);
+          },
+          header: true,
+        });
+      }
+    }
+  };
 
   return (
-    <>
+    <div>
       <div className="flex justify-end">
         <ModeToggle />
       </div>
-      <div className="flex flex-row justify-between">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className="flex flex-col items-center">
+        <p>CSV File</p>
+        <input id="csv" type="file" accept=".csv" onChange={csvUpload} />
+        {showTable
+        ? <div className="flex flex-col items-center">
+          <button onClick={() => setShowTable(false)} className="px-4 py-2 border-2 border-white m-2">Hide</button>
+          <DataTable headers={headers} body={body} />
+        </div>
+        : <button onClick={() => setShowTable(true)} className="px-4 py-2 border-2 border-white m-2">Show</button>}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   );
 }
 
