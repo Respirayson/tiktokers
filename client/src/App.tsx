@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Papa, { LocalFile, ParseResult } from "papaparse";
+import Papa, { ParseResult } from "papaparse";
 import "./App.css";
 import { ModeToggle } from "./components/mode-toggle";
 import DataTable from "./components/dataTable/DataTable";
