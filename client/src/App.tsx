@@ -29,6 +29,7 @@ function App() {
       }
     }
   };
+
   const [selectedButton, setSelectedButton] = useState("Data");
 
   return (
@@ -50,12 +51,24 @@ function App() {
       <div className="flex flex-col items-center">
         <p>CSV File</p>
         <input id="csv" type="file" accept=".csv" onChange={csvUpload} />
-        {showTable
-        ? <div className="flex flex-col items-center">
-          <button onClick={() => setShowTable(false)} className="px-4 py-2 border-2 border-white m-2">Hide</button>
-          <DataTable headers={headers} body={body} />
-        </div>
-        : <button onClick={() => setShowTable(true)} className="px-4 py-2 border-2 border-white m-2">Show</button>}
+        {showTable ? (
+          <div className="flex flex-col items-center">
+            <button
+              onClick={() => setShowTable(false)}
+              className="px-4 py-2 border-2 border-white m-2"
+            >
+              Hide
+            </button>
+            <DataTable headers={headers} body={body} />
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowTable(true)}
+            className="px-4 py-2 border-2 border-white m-2"
+          >
+            Show
+          </button>
+        )}
       </div>
     </>
   );
