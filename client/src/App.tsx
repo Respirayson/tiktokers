@@ -7,26 +7,51 @@ import Sidebar from "./components/sidebar";
 import Navbar from "./components/floating-navbar";
 import { InputFile } from "./components/input-file";
 import AnalyticsTable from "./components/AnalyticsTable/AnalyticsTable";
-import { mockHeaders, mockRowData, mockRowNames } from "./components/AnalyticsTable/AnalyticsMockData";
+import {
+  mockHeaders,
+  mockRowData,
+  mockRowNames,
+} from "./components/AnalyticsTable/AnalyticsMockData";
+import axios from "axios";
 
 function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
   const [body, setBody] = useState<Array<object>>([]);
-  const [showTable, setShowTable] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>("");
 
-  const csvUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const csvUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const file = event.target.files[0];
       if (file) {
         Papa.parse<File, Papa.LocalFile>(file, {
-          complete: (results: ParseResult<File>) => {
+          complete: async (results: ParseResult<File>) => {
             console.log(results);
             if (results.meta.fields) {
               setHeaders(results.meta.fields);
             }
             setBody(results.data);
             setFileName(file.name);
+            setSelectedButton("Analytics");
+
+            // Prepare the form data
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+              // Send the file to the backend
+              const response = await axios.post(
+                "http://localhost:5000/upload",
+                formData,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                  },
+                }
+              );
+              console.log("File successfully uploaded:", response.data);
+            } catch (error) {
+              console.error("Error uploading file:", error);
+            }
           },
           header: true,
         });
@@ -49,31 +74,20 @@ function App() {
 
       {/* body */}
       <div className="pl-[16rem]">
-        {selectedButton === "Data" && <InputFile />}
-      </div>
+        {selectedButton === "Data" && <InputFile handleChange={csvUpload} />}
 
-      <div className="flex flex-col items-center">
-        <p>CSV File</p>
-        <input id="csv" type="file" accept=".csv" onChange={csvUpload} />
-        {showTable ? (
-          <div className="w-full flex flex-col items-center">
-            <button
-              onClick={() => setShowTable(false)}
-              className="px-4 py-2 border-2 border-white m-2"
-            >
-              Hide
-            </button>
-            <DataTable headers={headers} body={body} fileName={fileName} />
-            <hr className="h-px w-full my-2 bg-gray-200 border-0 dark:bg-gray-700"></hr>
-            <AnalyticsTable headers={mockHeaders} rowNames={mockRowNames} rowData={mockRowData} />
+        {selectedButton === "Analytics" && (
+          <div className="flex flex-col items-center justify-center pt-20">
+            <div className="w-full flex flex-col items-center justify-center">
+              <DataTable headers={headers} body={body} fileName={fileName} />
+              <hr className="h-px w-full my-2 bg-gray-200 border-0 dark:bg-gray-700"></hr>
+              <AnalyticsTable
+                headers={mockHeaders}
+                rowNames={mockRowNames}
+                rowData={mockRowData}
+              />
+            </div>
           </div>
-        ) : (
-          <button
-            onClick={() => setShowTable(true)}
-            className="px-4 py-2 border-2 border-white m-2"
-          >
-            Show
-          </button>
         )}
       </div>
     </>

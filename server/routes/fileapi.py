@@ -1,36 +1,40 @@
-from flask import Flask, flash, request, redirect, url_for
-from flask_restful import reqparse, abort, Api, Resource
+from flask import request, jsonify
+from flask_restful import Resource
 from werkzeug.utils import secure_filename
 
 from dotenv import load_dotenv
 import os
-import psycopg2
 
 load_dotenv()
 
 UPLOAD_FOLDER = "data"
-ALLOWED_EXTENSIONS = {'csv', 'npy'}
+ALLOWED_EXTENSIONS = {"csv", "npy"}
 
 class FileHandler(Resource):
 
     def __init__(self):
-        pass
+        # Ensure the upload folder exists when the class is instantiated
+        if not os.path.exists(UPLOAD_FOLDER):
+            os.makedirs(UPLOAD_FOLDER)
 
     def is_file_allowed(self, filename):
-        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        return (
+            "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+        )
 
     def get(self):
-        return "Hello world"
+        return jsonify(
+            {"status": "success", "message": "Uploading file API connected."}
+        )
 
     def post(self):
-        form = request.form.to_dict()
-        print(form)
-        
-        if 'file' not in request.files:
-            return 'No file part'
+        if "file" not in request.files:
+            return jsonify({'message': 'No file part', "status": "unsuccessful"})
 
-        file = request.files.get('file')
+        file = request.files.get("file")
         if file and self.is_file_allowed(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, filename))
-            return "File uploaded successfully"
+            return jsonify({"name": filename, "status": "success"})
+        else:
+            return jsonify({'message': 'File type not allowed', "status": "unsuccessful"})
