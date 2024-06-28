@@ -38,7 +38,7 @@ const Sidebar = () => {
           </svg>
           <span className="ml-3 text-base font-semibold">MLBB</span>
         </a>
-        <span className="mb-10 ml-3 font-thin text-left">Machine Learning for Basics and Beginners</span>
+        <span className="mb-10 ml-3 font-thin text-left">Machine Learning Basics for Beginners</span>
 
         <Accordion type="single" collapsible className="w-full">
           <ul className="space-y-2 text-sm font-medium">
