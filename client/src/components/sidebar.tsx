@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Accordion,
   AccordionContent,
@@ -5,7 +6,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const Sidebar = () => {
+const Sidebar = ({ modelType, setModelType, trainModel }) => {
+  const handleModelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setModelType(event.target.value);
+  };
+
   return (
     <aside
       id="sidebar"
@@ -86,24 +91,18 @@ const Sidebar = () => {
                 <AccordionContent>
                   <ul className="space-y-2 text-sm font-medium">
                     <li>
-                      <a
-                        href="#"
-                        className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
+                      <select
+                        value={modelType}
+                        onChange={handleModelChange}
+                        className="form-select mt-1 block w-full"
                       >
-                        <span className="ml-3 whitespace-nowrap">
-                          Classification
-                        </span>
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
-                      >
-                        <span className="ml-3 whitespace-nowrap">
-                          Regression
-                        </span>
-                      </a>
+                        <option value="logistic_regression">
+                          Logistic Regression
+                        </option>
+                        <option value="linear_regression">
+                          Linear Regression
+                        </option>
+                      </select>
                     </li>
                   </ul>
                 </AccordionContent>
@@ -197,6 +196,7 @@ const Sidebar = () => {
                       <a
                         href="#"
                         className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
+                        onClick={() => handleModelChange('linear_regression')}
                       >
                         <span className="ml-3 whitespace-nowrap">
                           Linear Regression
@@ -207,6 +207,7 @@ const Sidebar = () => {
                       <a
                         href="#"
                         className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
+                        onClick={() => handleModelChange('logistic_regression')}
                       >
                         <span className="ml-3 whitespace-nowrap">
                           Logistic Regression
@@ -243,6 +244,15 @@ const Sidebar = () => {
             </li>
           </ul>
         </Accordion>
+
+        <div className="mt-10">
+          <button
+            onClick={trainModel}
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+          >
+            Train Model
+          </button>
+        </div>
 
         <div className="mt-auto flex">
           <div className="flex w-full justify-between">

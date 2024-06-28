@@ -9,7 +9,7 @@ import logging
 import sys
 import traceback
 
-from routes.fileapi import FileHandler
+from routes.fileapi import FileHandler, TrainModelHandler
 from logging.handlers import RotatingFileHandler
 from common import settings
 from pathlib import Path
@@ -76,6 +76,7 @@ def start_app():
         conn.close()
 
         api.add_resource(FileHandler, "/upload")
+        api.add_resource(TrainModelHandler, "/train")
 
         logger.info("Running FlaskServer")
         return app

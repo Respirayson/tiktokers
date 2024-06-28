@@ -18,6 +18,10 @@ function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
   const [body, setBody] = useState<Array<object>>([]);
   const [fileName, setFileName] = useState<string>("");
+  const [filePath, setFilePath] = useState<string>("");
+  const [selectedButton, setSelectedButton] = useState("Data");
+  const [modelType, setModelType] = useState("linear_regression");
+  const [learningType, setLearningType] = useState("supervised");
 
   const csvUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -49,6 +53,7 @@ function App() {
                 }
               );
               console.log("File successfully uploaded:", response.data);
+              setFilePath(response.data.preprocessed_file); // Save preprocessed file path
             } catch (error) {
               console.error("Error uploading file:", error);
             }
@@ -59,11 +64,28 @@ function App() {
     }
   };
 
-  const [selectedButton, setSelectedButton] = useState("Data");
+  const trainModel = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/train", {
+        modelType: modelType,
+        filePath: filePath,
+        learningType: learningType,
+      });
+
+      console.log("Training result:", response.data);
+      // Handle the training result, display to the user or update UI
+    } catch (error) {
+      console.error("Error training model:", error);
+    }
+  };
 
   return (
     <>
-      <Sidebar />
+      <Sidebar
+        modelType={modelType}
+        setModelType={setModelType}
+        trainModel={trainModel}
+      />
       <Navbar
         selectedButton={selectedButton}
         setSelectedButton={setSelectedButton}
