@@ -4,26 +4,26 @@ const AnalyticsTable = (prop: AnalyticsTableProp) => {
     const { headers, rowNames, rowData } = prop;
 
     const tableHeaderInfo = headers.map((value, index) => (
-        <th key={index} className='px-2 py-2 border-2 border-white text-center text-lg'>
+        <th key={index} className='py-2'>
           {value}
         </th>
       ));
 
     const tableBodyInfo = rowNames.map((name, index) => (
         <tr key={index}>
-            <td className='px-2 py-2 border-2 border-white text-center text-lg' key={`header-name-${index}`}>{name}</td>
+            <td className='border-t-2 text-end text-sm font-semibold' key={`header-name-${index}`}>{name}</td>
             {rowData.map((analyticsPoint, dataIndex) => (
-                <td className='px-2 py-2 border-2 border-white text-center text-lg' key={`${name}-${dataIndex}`}>{analyticsPoint[name]}</td>
+                <td className='border-t-2 text-center text-sm' key={`${name}-${dataIndex}`}>{analyticsPoint[name]}</td>
             ))}
         </tr>
     ))
 
     return (
-      <div className='max-h-[20vh] max-w-[60vw] m-2 overflow-auto'>
-        <table className='table-auto mr-1'>
+      <div className='h-[30vh] w-[60vw] flex flex-col items-center border-2 rounded-lg shadow-md overflow-auto no-vertical-scrollbar'>
+        <table className='h-full w-11/12 table-auto'>
           <thead>
-            <tr>
-              <th key="blank" className='px-2 py-2 border-2 border-white text-center text-lg'></th>
+            <tr className='text-center text-sm text-stone-400'>
+              <th key="headers" className='w-1/6 py-2'></th>
               {tableHeaderInfo}
             </tr>
           </thead>

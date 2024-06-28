@@ -1,23 +1,28 @@
 import { DataTableProp } from './DataTable.type'
 
 const DataTable = (data: DataTableProp) => {
-  const tableHeaderInfo = data.headers.map((value, index) => (
-    <th key={index} className='px-2 py-2 border-2 border-white text-center text-lg'>
+  const { headers, body, fileName } = data;
+  
+  const tableHeaderInfo = headers.map((value, index) => (
+    <th key={index} className='px-2 pb-3 text-center text-base text-stone-400'>
       {value}
     </th>
   ));
   
-  const tableBodyInfo = data.body.map((dataPoint, index) => (
+  const tableBodyInfo = body.map((dataPoint, index) => (
     <tr key={index}>
       {Object.entries(dataPoint).map(([key, value]) => (
-        <td className='px-2 py-2 border-2 border-white text-center text-lg' key={key}>{value}</td>
+        <td className='px-2 py-3 border-t-2 text-center text-base' key={key}>{value}</td>
       ))}
     </tr>
   ));
 
   return (
-    <div className='max-h-[85vh] max-w-[60vw] m-2 overflow-auto'>
-      <table className='table-auto mr-1'>
+    <div className='h-[50vh] w-[60vw] flex flex-col items-center border-2 rounded-lg shadow-md overflow-auto no-vertical-scrollbar'>
+      <div className='w-11/12 flex flex-row justify-start'>
+        <h3 className='py-6 text-xl font-bold text-left'>{fileName}*</h3>
+      </div>
+      <table className='h-full w-11/12 table-auto'>
         <thead>
           <tr>
             {tableHeaderInfo}

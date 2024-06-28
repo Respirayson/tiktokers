@@ -6,11 +6,14 @@ import DataTable from "./components/DataTable/DataTable";
 import Sidebar from "./components/sidebar";
 import Navbar from "./components/floating-navbar";
 import { InputFile } from "./components/input-file";
+import AnalyticsTable from "./components/AnalyticsTable/AnalyticsTable";
+import { mockHeaders, mockRowData, mockRowNames } from "./components/AnalyticsTable/AnalyticsMockData";
 
 function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
   const [body, setBody] = useState<Array<object>>([]);
   const [showTable, setShowTable] = useState<boolean>(false);
+  const [fileName, setFileName] = useState<string>("");
 
   const csvUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -23,6 +26,7 @@ function App() {
               setHeaders(results.meta.fields);
             }
             setBody(results.data);
+            setFileName(file.name);
           },
           header: true,
         });
@@ -52,14 +56,16 @@ function App() {
         <p>CSV File</p>
         <input id="csv" type="file" accept=".csv" onChange={csvUpload} />
         {showTable ? (
-          <div className="flex flex-col items-center">
+          <div className="w-full flex flex-col items-center">
             <button
               onClick={() => setShowTable(false)}
               className="px-4 py-2 border-2 border-white m-2"
             >
               Hide
             </button>
-            <DataTable headers={headers} body={body} />
+            <DataTable headers={headers} body={body} fileName={fileName} />
+            <hr className="h-px w-full my-2 bg-gray-200 border-0 dark:bg-gray-700"></hr>
+            <AnalyticsTable headers={mockHeaders} rowNames={mockRowNames} rowData={mockRowData} />
           </div>
         ) : (
           <button
