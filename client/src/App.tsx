@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Papa, { ParseResult } from "papaparse";
 import "./App.css";
 import { ModeToggle } from "./components/mode-toggle";
-import DataTable from "./components/rsgfsg/DataTable";
+import DataTable from "./components/DataTable/DataTable";
 import Sidebar from "./components/sidebar";
 import Navbar from "./components/floating-navbar";
 import { InputFile } from "./components/input-file";
