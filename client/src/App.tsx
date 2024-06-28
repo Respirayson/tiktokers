@@ -13,6 +13,8 @@ import {
   mockRowNames,
 } from "./components/AnalyticsTable/AnalyticsMockData";
 import axios from "axios";
+import DataColumns from "./components/DataTableRefactor/DataColumns";
+import DataTableMain from "./components/DataTableRefactor/DataTableMain";
 
 function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
@@ -59,7 +61,9 @@ function App() {
     }
   };
 
-  const [selectedButton, setSelectedButton] = useState("Data");
+  const [selectedButton, setSelectedButton] = useState("Data")
+
+  const dataColumns = DataColumns(headers)
 
   return (
     <>
@@ -79,7 +83,7 @@ function App() {
         {selectedButton === "Analytics" && (
           <div className="flex flex-col items-center justify-center pt-20">
             <div className="w-full flex flex-col items-center justify-center">
-              <DataTable headers={headers} body={body} fileName={fileName} />
+              <DataTableMain columns={dataColumns} data={body}/>
               <hr className="h-px w-full my-2 bg-gray-200 border-0 dark:bg-gray-700"></hr>
               <AnalyticsTable
                 headers={mockHeaders}
