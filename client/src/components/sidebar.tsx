@@ -91,18 +91,24 @@ const Sidebar = ({ modelType, setModelType, trainModel }) => {
                 <AccordionContent>
                   <ul className="space-y-2 text-sm font-medium">
                     <li>
-                      <select
-                        value={modelType}
-                        onChange={handleModelChange}
-                        className="form-select mt-1 block w-full"
+                      <a
+                        href="#"
+                        className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
                       >
-                        <option value="logistic_regression">
-                          Logistic Regression
-                        </option>
-                        <option value="linear_regression">
-                          Linear Regression
-                        </option>
-                      </select>
+                        <span className="ml-3 whitespace-nowrap">
+                          Classification
+                        </span>
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#"
+                        className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
+                      >
+                        <span className="ml-3 whitespace-nowrap">
+                          Regression
+                        </span>
+                      </a>
                     </li>
                   </ul>
                 </AccordionContent>
@@ -193,26 +199,18 @@ const Sidebar = ({ modelType, setModelType, trainModel }) => {
                 <AccordionContent>
                   <ul className="space-y-2 text-sm font-medium">
                     <li>
-                      <a
-                        href="#"
-                        className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
-                        onClick={() => handleModelChange('linear_regression')}
+                      <select
+                        value={modelType}
+                        onChange={handleModelChange}
+                        className="form-select mt-1 block w-full"
                       >
-                        <span className="ml-3 whitespace-nowrap">
-                          Linear Regression
-                        </span>
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
-                        onClick={() => handleModelChange('logistic_regression')}
-                      >
-                        <span className="ml-3 whitespace-nowrap">
+                        <option value="logistic_regression">
                           Logistic Regression
-                        </span>
-                      </a>
+                        </option>
+                        <option value="linear_regression">
+                          Linear Regression
+                        </option>
+                      </select>
                     </li>
                   </ul>
                 </AccordionContent>
