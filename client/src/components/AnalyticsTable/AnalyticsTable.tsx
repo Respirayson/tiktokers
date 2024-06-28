@@ -1,4 +1,3 @@
-import React from 'react'
 import { AnalyticsTableProp } from './AnalyticsTable.type'
 
 const AnalyticsTable = (prop: AnalyticsTableProp) => {
