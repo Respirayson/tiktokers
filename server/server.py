@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_restful import reqparse, abort, Api, Resource
+from flask_cors import CORS
 
 from dotenv import load_dotenv
 import os
@@ -54,6 +55,7 @@ def start_app():
 
     try:
         app = Flask(__name__)
+        cors = CORS(app=app)
         app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
         api = Api(app)
