@@ -79,15 +79,15 @@ function App() {
         {selectedButton === "Data" && <InputFile handleChange={csvUpload} />}
 
         {selectedButton === "Analytics" && (
-          <div className="flex flex-col items-center justify-center pt-20">
+          <div className="flex flex-col pt-20">
             <div className="w-full flex flex-col items-center justify-center">
               <div className='w-[70vw]'>
-                <DataTable columns={dataColumns} data={body} />
+                <DataTable columns={dataColumns} data={body} filename={fileName} />
               </div>
               <Separator className="my-4" />
               <div className='w-[70vw]'>
                 {/* Analytics Table */}
-                <AnalyticsTable columns={analyticsColumns} data={body.slice(0,8)} statisticTitles={statisticsTitles} />
+                <AnalyticsTable columns={analyticsColumns} data={body.slice(0, 8)} statisticTitles={statisticsTitles} />
               </div>
             </div>
           </div>
