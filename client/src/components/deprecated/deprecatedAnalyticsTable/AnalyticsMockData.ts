@@ -54,3 +54,30 @@ export const mockRowData = [
         'Variance': '5.67',
     },
 ]
+
+export const statisticHeaders = [
+    {
+        "Statistic": 'Data Type'
+    },
+    {
+        "Statistic": 'Distinct values'
+    },
+    {
+        "Statistic": 'Missing values'
+    },
+    {
+        "Statistic": 'Mean'
+    },
+    {
+        "Statistic": 'Median'
+    },
+    {
+        "Statistic": 'Mode'
+    },
+    {
+        "Statistic": 'Standard Deviation'
+    },
+    {
+        "Statistic": 'Variance'
+    },
+]

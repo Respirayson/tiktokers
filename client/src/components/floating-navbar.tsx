@@ -25,7 +25,7 @@ export default function Component({
   const { handleButtonClick, isSelected } = useButtonSelection(selectedButton, setSelectedButton);
 
   return (
-    <div className="fixed top-4 left-[18rem] flex gap-4 bg-gray-100 p-1 rounded-lg shadow-lg dark:bg-primary-foreground">
+    <div className="fixed top-4 left-[18rem] flex gap-4 bg-gray-100 p-1 rounded-lg shadow-lg dark:bg-primary-foreground z-10">
       <Button
         variant="nav"
         onClick={() => handleButtonClick("Data")}
