@@ -35,7 +35,7 @@ export function AnalyticsTable<TData, TValue>({
 
     return (
         <div className="flex rounded-md border">
-            <div className="w-1/12">
+            <div className="w-30">
                 <Table>
                     <TableHeader>
                         <TableRow className="standard-row-height">
