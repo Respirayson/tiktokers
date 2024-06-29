@@ -35,32 +35,13 @@ export function AnalyticsTable<TData, TValue>({
 
     return (
         <div className="flex rounded-md border">
-            <div className="w-30">
-                <Table>
-                    <TableHeader>
-                        <TableRow className="standard-row-height">
-                            <TableHead className="text-center">Statistic</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {
-                            statisticTitles.map((statTitle) => (
-                                <TableRow className="standard-row-height">
-                                    <TableCell className="standard-cell-height">
-                                        {statTitle}
-                                    </TableCell>
-                                </TableRow>
-                            ))
-                        }
-                    </TableBody>
-                </Table>
-            </div>
-            <div className="flex-1 flex-grow flex-col">
+            <div className="flex-1 flex-grow flex-col overflow-auto">
                 {data.length > 0 ? (
                     <Table>
                         <TableHeader>
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <TableRow key={headerGroup.id} className="standard-row-height">
+                                    <TableHead className="text-center">Statistic</TableHead>
                                     {headerGroup.headers.map((header) => {
                                         return (
                                             <TableHead key={header.id} className="text-center">
@@ -84,6 +65,9 @@ export function AnalyticsTable<TData, TValue>({
                                         data-state={row.getIsSelected() && "selected"}
                                         className="standard-row-height"
                                     >
+                                        <TableCell>
+                                            {statisticTitles[row.index]}
+                                        </TableCell>
                                         {row.getVisibleCells().map((cell) => (
                                             <TableCell key={cell.id} className="standard-cell-height">
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
