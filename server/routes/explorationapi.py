@@ -12,7 +12,10 @@ load_dotenv()
 
 UPLOAD_FOLDER = "data"
 
-class Oversample(Resource):
+class OversampleHandler(Resource):
+    def get(self):
+        return jsonify({"status": "success", "message": "Oversample API connected."})
+
     def post(self):
         data = request.json
         filename = data['filename']
@@ -34,7 +37,10 @@ class Oversample(Resource):
         df_resampled.to_csv(file_path, index=False)
         return df_resampled.to_json(orient='records')
 
-class Undersample(Resource):
+class UndersampleHandler(Resource):
+    def get(self):
+        return jsonify({"status": "success", "message": "Undersample API connected."})
+
     def post(self):
         data = request.json
         filename = data['filename']
@@ -56,7 +62,10 @@ class Undersample(Resource):
         df_resampled.to_csv(file_path, index=False)
         return df_resampled.to_json(orient='records')
     
-class Impute(Resource):
+class ImputeHandler(Resource):
+    def get(self):
+        return jsonify({"status": "success", "message": "Impute API connected."})
+
     def post(self):
         data = request.json
         filename = data['filename']
@@ -71,7 +80,10 @@ class Impute(Resource):
         df_imputed.to_csv(file_path, index=False)
         return df_imputed.to_json(orient='records')
     
-class HandleOutliers(Resource):
+class OutlierHandler(Resource):
+    def get(self):
+        return jsonify({"status": "success", "message": "Outlier API connected."})
+
     def post(self):
         data = request.json
         filename = data['filename']

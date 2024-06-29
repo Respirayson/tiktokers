@@ -10,6 +10,8 @@ import sys
 import traceback
 
 from routes.fileapi import FileHandler
+from routes.explorationapi import OversampleHandler, UndersampleHandler, ImputeHandler, OutlierHandler
+from routes.preprocessingapi import EncodeHandler, ScaleHandler, SelectFeaturesHandler
 from logging.handlers import RotatingFileHandler
 from common import settings
 from pathlib import Path
@@ -71,6 +73,13 @@ def start_app():
         conn.close()
 
         api.add_resource(FileHandler, "/upload")
+        api.add_resource(OversampleHandler, "/exploration/oversample")
+        api.add_resource(UndersampleHandler, "/exploration/undersample")
+        api.add_resource(ImputeHandler, "/exploration/impute")
+        api.add_resource(OutlierHandler, "/exploration/outlier")
+        api.add_resource(EncodeHandler, "/preprocessing/encode")
+        api.add_resource(ScaleHandler, "/preprocessing/scale")
+        api.add_resource(SelectFeaturesHandler, "/preprocessing/features")
 
         logger.info("Running FlaskServer")
         return app

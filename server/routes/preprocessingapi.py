@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from flask_restful import Resource
 from dotenv import load_dotenv
 import pandas as pd
@@ -10,7 +10,10 @@ load_dotenv()
 
 UPLOAD_FOLDER = "data"
 
-class Encode(Resource):
+class EncodeHandler(Resource):
+    def get(self):
+        return jsonify({"status": "success", "message": "Encode API connected."})
+
     def post(self):
         data = request.json
         filename = data['filename']
@@ -27,7 +30,10 @@ class Encode(Resource):
         df.to_csv(file_path, index=False)
         return df.to_json(orient='records')
 
-class Scale(Resource):
+class ScaleHandler(Resource):
+    def get(self):
+        return jsonify({"status": "success", "message": "Scale API connected."})
+
     def post(self):
         data = request.json
         filename = data['filename']
@@ -42,7 +48,10 @@ class Scale(Resource):
         df.to_csv(file_path, index=False)
         return df.to_json(orient='records')
 
-class SelectFeatures(Resource):
+class SelectFeaturesHandler(Resource):
+    def get(self):
+        return jsonify({"status": "success", "message": "Select Features API connected."})
+
     def post(self):
         data = request.json
         filename = data['filename']
