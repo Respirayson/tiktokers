@@ -8,7 +8,7 @@ const DataColumns = <T extends Record<string, any>>(headers: string[]): ColumnDe
     accessorKey: header,
     header: ({ column }) => {
       return (
-        <div className="item-center justify-center">
+        <div>
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}

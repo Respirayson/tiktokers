@@ -5,7 +5,6 @@ import { ModeToggle } from "./components/mode-toggle";
 import Sidebar from "./components/sidebar";
 import Navbar from "./components/floating-navbar";
 import { InputFile } from "./components/input-file";
-import AnalyticsTable from "./components/AnalyticsTable/AnalyticsTable";
 import {
   mockHeaders,
   mockRowData,
@@ -13,7 +12,9 @@ import {
 } from "./components/AnalyticsTable/AnalyticsMockData";
 import axios from "axios";
 import DataColumns from "./components/DataTable/DataColumns";
-import DataTableMain from "./components/DataTable/DataTableMain";
+import AnalyticsColumns from "./components/AnalyticsTableRefactor/AnalyticsColumns";
+import { DataTable } from "./components/DataTable/DataTable";
+import { AnalyticsTable } from "./components/AnalyticsTableRefactor/AnalyticsTable";
 
 function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
@@ -63,6 +64,7 @@ function App() {
   const [selectedButton, setSelectedButton] = useState("Data")
 
   const dataColumns = DataColumns(headers)
+  const analyticsColumns = AnalyticsColumns(headers)
 
   return (
     <>
@@ -82,13 +84,14 @@ function App() {
         {selectedButton === "Analytics" && (
           <div className="flex flex-col items-center justify-center pt-20">
             <div className="w-full flex flex-col items-center justify-center">
-              <DataTableMain columns={dataColumns} data={body}/>
+              <div className='w-[70vw]'>
+                <DataTable columns={dataColumns} data={body} />
+              </div>
               <hr className="h-px w-full my-2 bg-gray-200 border-0 dark:bg-gray-700"></hr>
-              <AnalyticsTable
-                headers={mockHeaders}
-                rowNames={mockRowNames}
-                rowData={mockRowData}
-              />
+              <div className='w-[70vw]'>
+                {/* Analytics Table */}
+                <AnalyticsTable columns={analyticsColumns} data={body.slice(0,8)} statisticTitles={mockRowNames} />
+              </div>
             </div>
           </div>
         )}

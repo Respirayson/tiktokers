@@ -1,0 +1,13 @@
+.standard-row-height {
+    min-height: 48px;
+}
+
+.standard-cell-height {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
