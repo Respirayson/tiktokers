@@ -21,9 +21,6 @@ logger = logging.getLogger()
 def start_logger():
     logformatter =  logging.Formatter(settings.LOG_FORMAT)
 
-
-    #print "Log format ",logformatter
-    #print "Log level ",LOG_LEVEL
     filepath = Path(settings.LOG_FILE)
     filepath.parent.mkdir(exist_ok=True, parents=True)
     logger.setLevel(settings.DEFAULT_LEVELS[settings.FILE_LOG_LEVEL])
@@ -31,13 +28,10 @@ def start_logger():
     fh.setFormatter(logformatter)
     logger.addHandler(fh)
 
-
     consoleHandler = logging.StreamHandler(sys.stdout)
     consoleHandler.setFormatter(logging.Formatter(settings.CONSOLE_LOG_FORMAT))
     consoleHandler.setLevel(settings.DEFAULT_LEVELS[settings.CONSOLE_LOG_LEVEL])
     logger.addHandler(consoleHandler)
-
-    #logging.basicConfig(filename=self.log_file_path,format=logformatter,level=settings.DEFAULT_LEVELS[LOG_LEVEL])
 
     logger.info("FlaskServer started")
 
@@ -57,6 +51,7 @@ def start_app():
         app = Flask(__name__)
         cors = CORS(app=app)
         app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+        app.config['CORS_HEADERS'] = 'Content-Type'
 
         api = Api(app)
 

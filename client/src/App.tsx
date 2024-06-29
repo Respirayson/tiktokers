@@ -18,10 +18,12 @@ function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
   const [body, setBody] = useState<Array<object>>([]);
   const [fileName, setFileName] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const csvUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const file = event.target.files[0];
+      setIsLoading(true);
       if (file) {
         Papa.parse<File, Papa.LocalFile>(file, {
           complete: async (results: ParseResult<File>) => {
@@ -32,13 +34,11 @@ function App() {
             setBody(results.data);
             setFileName(file.name);
             setSelectedButton("Analytics");
-
-            // Prepare the form data
+            setIsLoading(false);
             const formData = new FormData();
             formData.append("file", file);
 
             try {
-              // Send the file to the backend
               const response = await axios.post(
                 "http://localhost:5000/upload",
                 formData,
@@ -74,7 +74,9 @@ function App() {
 
       {/* body */}
       <div className="pl-[16rem]">
-        {selectedButton === "Data" && <InputFile handleChange={csvUpload} />}
+        {selectedButton === "Data" && (
+          <InputFile isLoading={isLoading} handleChange={csvUpload} />
+        )}
 
         {selectedButton === "Analytics" && (
           <div className="flex flex-col items-center justify-center pt-20">

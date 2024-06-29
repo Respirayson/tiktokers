@@ -1,4 +1,4 @@
-import { DataTableProp } from './DataTable.type'
+import { DataTableProp } from './DataTable.type.ts'
 
 const DataTable = (data: DataTableProp) => {
   const { headers, body, fileName } = data;
