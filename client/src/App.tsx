@@ -104,6 +104,21 @@ function App() {
                   statisticTitles={statisticsTitles}
                 />
               </div>
+              {/* <div className="w-[70vw] mt-4">
+                <h3>Histograms</h3>
+                <div className="flex flex-wrap">
+                  {Object.keys(histograms).map((key) => (
+                    <div key={key} className="p-2">
+                      <h5>{key}</h5>
+                      <img
+                        src={`data:image/png;base64,${histograms[key]}`}
+                        alt={`Histogram of ${key}`}
+                        style={{ maxWidth: "200px", maxHeight: "150px" }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div> */}
             </div>
           </div>
         )}

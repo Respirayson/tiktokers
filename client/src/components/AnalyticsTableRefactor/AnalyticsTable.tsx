@@ -16,17 +16,22 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-interface AnalyticsTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+// Define a utility type that extends TData to include the statistic property
+type StatisticData<TData> = TData & {
+    statistic: string;
+};
+
+interface AnalyticsTableProps<TData> {
+    columns: ColumnDef<StatisticData<TData>>[]
+    data: StatisticData<TData>[]
     statisticTitles: string[]
 }
 
-export function AnalyticsTable<TData, TValue>({
+export function AnalyticsTable<TData>({
     columns,
     data,
     statisticTitles,
-}: AnalyticsTableProps<TData, TValue>) {
+}: AnalyticsTableProps<TData>) {
     const table = useReactTable({
         data,
         columns,
@@ -34,7 +39,7 @@ export function AnalyticsTable<TData, TValue>({
     })
 
     return (
-        <div className="flex rounded-md border">
+        <div className="flex flex-col rounded-md border">
             <div className="flex-1 flex-grow flex-col overflow-auto">
                 {data.length > 0 ? (
                     <Table>
@@ -70,7 +75,15 @@ export function AnalyticsTable<TData, TValue>({
                                         </TableCell>
                                         {row.getVisibleCells().map((cell) => (
                                             <TableCell key={cell.id} className="standard-cell-height">
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                {row.original.statistic === "histogram" ? (
+                                                    <img
+                                                        src={`data:image/png;base64,${cell.getValue()}`}
+                                                        alt={`Histogram of ${cell.column.id}`}
+                                                        style={{ maxWidth: '180px', maxHeight: '125px' }}
+                                                    />
+                                                ) : (
+                                                    flexRender(cell.column.columnDef.cell, cell.getContext())
+                                                )}
                                             </TableCell>
                                         ))}
                                     </TableRow>
