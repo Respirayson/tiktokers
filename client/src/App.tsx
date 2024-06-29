@@ -5,16 +5,13 @@ import { ModeToggle } from "./components/mode-toggle";
 import Sidebar from "./components/sidebar";
 import Navbar from "./components/floating-navbar";
 import { InputFile } from "./components/input-file";
-import {
-  mockHeaders,
-  mockRowData,
-  mockRowNames,
-} from "./components/AnalyticsTable/AnalyticsMockData";
 import axios from "axios";
 import DataColumns from "./components/DataTable/DataColumns";
 import AnalyticsColumns from "./components/AnalyticsTableRefactor/AnalyticsColumns";
 import { DataTable } from "./components/DataTable/DataTable";
 import { AnalyticsTable } from "./components/AnalyticsTableRefactor/AnalyticsTable";
+import { statisticsTitles } from "./components/AnalyticsTableRefactor/AnalyticsMockData";
+import { Separator } from "./components/ui/separator";
 
 function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
@@ -87,10 +84,10 @@ function App() {
               <div className='w-[70vw]'>
                 <DataTable columns={dataColumns} data={body} />
               </div>
-              <hr className="h-px w-full my-2 bg-gray-200 border-0 dark:bg-gray-700"></hr>
+              <Separator className="my-4" />
               <div className='w-[70vw]'>
                 {/* Analytics Table */}
-                <AnalyticsTable columns={analyticsColumns} data={body.slice(0,8)} statisticTitles={mockRowNames} />
+                <AnalyticsTable columns={analyticsColumns} data={body.slice(0,8)} statisticTitles={statisticsTitles} />
               </div>
             </div>
           </div>
