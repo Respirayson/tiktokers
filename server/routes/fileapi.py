@@ -45,33 +45,41 @@ class FileHandler(Resource):
             return jsonify({'message': 'File type not allowed', "status": "unsuccessful"})
 
     def compute_statistics(self, df):
-        stats = {
-            "Data Type": {},
-            "Distinct values": {},
-            "Missing values": {},
-            "Mean": {},
-            "Median": {},
-            "Mode": {},
-            "Standard Deviation": {},
-            "Variance": {}
+        statistics = {
+            "data_type": {},
+            "distinct_values": {},
+            "missing_values": {},
+            "mean": {},
+            "median": {},
+            "mode": {},
+            "std_deviation": {},
+            "variance": {}
         }
 
         for column in df.columns:
-            stats["Data Type"][column] = str(df[column].dtype)
-            stats["Distinct values"][column] = int(df[column].nunique()) > 0
-            stats["Missing values"][column] = bool(df[column].isna().any())
-            stats["Mean"][column] = float(df[column].mean()) if pd.api.types.is_numeric_dtype(df[column]) else "NA"
-            stats["Median"][column] = float(df[column].median()) if pd.api.types.is_numeric_dtype(df[column]) else "NA"
+            statistics["data_type"][column] = str(df[column].dtype)
+            statistics["distinct_values"][column] = str(int(df[column].nunique()) > 0)
+            statistics["missing_values"][column] = str(df[column].isna().any())
+            statistics["mean"][column] = round(float(df[column].mean()), 3) if pd.api.types.is_numeric_dtype(df[column]) else "NA"
+            statistics["median"][column] = round(float(df[column].median()), 3) if pd.api.types.is_numeric_dtype(df[column]) else "NA"
             if not df[column].mode().empty:
                 mode_value = df[column].mode()[0]
-                stats["Mode"][column] = (
+                statistics["mode"][column] = (
                     int(mode_value) if pd.api.types.is_integer_dtype(mode_value) else
-                    float(mode_value) if pd.api.types.is_float_dtype(mode_value) else
+                    round(float(mode_value), 3) if pd.api.types.is_float_dtype(mode_value) else
                     str(mode_value)
                 )
             else:
-                stats["Mode"][column] = "NA"
-            stats["Standard Deviation"][column] = float(df[column].std()) if pd.api.types.is_numeric_dtype(df[column]) else "NA"
-            stats["Variance"][column] = float(df[column].var()) if pd.api.types.is_numeric_dtype(df[column]) else "NA"
+                statistics["mode"][column] = "NA"
+            statistics["std_deviation"][column] = round(float(df[column].std()), 3) if pd.api.types.is_numeric_dtype(df[column]) else "NA"
+            statistics["variance"][column] = round(float(df[column].var()), 3) if pd.api.types.is_numeric_dtype(df[column]) else "NA"
 
-        return stats
+        # Transforming statistics to the required format
+        formatted_stats = []
+        for stat in statistics:
+            row = {"statistic": stat}
+            for column in df.columns:
+                row[column] = statistics[stat][column]
+            formatted_stats.append(row)
+
+        return formatted_stats

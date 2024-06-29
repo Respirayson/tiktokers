@@ -19,7 +19,7 @@ import {
 interface AnalyticsTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
-    statisticTitles: String[]
+    statisticTitles: string[]
 }
 
 export function AnalyticsTable<TData, TValue>({

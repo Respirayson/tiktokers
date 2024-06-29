@@ -37,7 +37,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
-    filename: String
+    filename: string
 }
 
 export function DataTable<TData, TValue>({
@@ -107,7 +107,7 @@ export function DataTable<TData, TValue>({
                             <p className="text-sm font-medium">Rows per page</p>
                             <Select
                                 value={`${table.getState().pagination.pageSize}`}
-                                onValueChange={(value: any) => {
+                                onValueChange={(value: string) => {
                                     table.setPageSize(Number(value))
                                 }}
                             >

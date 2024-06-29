@@ -18,6 +18,7 @@ function App() {
   const [body, setBody] = useState<Array<object>>([]);
   const [fileName, setFileName] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [statistics, setStatistics] = useState<Array<object>>([]);
 
   const csvUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -32,8 +33,7 @@ function App() {
             }
             setBody(results.data);
             setFileName(file.name);
-            setSelectedButton("Analytics");
-            setIsLoading(false);
+
             const formData = new FormData();
             formData.append("file", file);
 
@@ -48,6 +48,9 @@ function App() {
                 }
               );
               console.log("File successfully uploaded:", response.data);
+              setStatistics(response.data.statistics);
+              setSelectedButton("Analytics");
+              setIsLoading(false);
             } catch (error) {
               console.error("Error uploading file:", error);
             }
@@ -58,10 +61,10 @@ function App() {
     }
   };
 
-  const [selectedButton, setSelectedButton] = useState("Data")
+  const [selectedButton, setSelectedButton] = useState("Data");
 
-  const dataColumns = DataColumns(headers)
-  const analyticsColumns = AnalyticsColumns(headers)
+  const dataColumns = DataColumns(headers);
+  const analyticsColumns = AnalyticsColumns(headers);
 
   return (
     <>
@@ -83,13 +86,21 @@ function App() {
         {selectedButton === "Analytics" && (
           <div className="flex flex-col pt-20">
             <div className="w-full flex flex-col items-center justify-center">
-              <div className='w-[70vw]'>
-                <DataTable columns={dataColumns} data={body} filename={fileName} />
+              <div className="w-[70vw]">
+                <DataTable
+                  columns={dataColumns}
+                  data={body}
+                  filename={fileName}
+                />
               </div>
               <Separator className="my-4" />
-              <div className='w-[70vw]'>
+              <div className="w-[70vw]">
                 {/* Analytics Table */}
-                <AnalyticsTable columns={analyticsColumns} data={body.slice(0, 8)} statisticTitles={statisticsTitles} />
+                <AnalyticsTable
+                  columns={analyticsColumns}
+                  data={statistics}
+                  statisticTitles={statisticsTitles}
+                />
               </div>
             </div>
           </div>
