@@ -1,0 +1,1 @@
+export const statisticsTitles = ['Data Type', 'Distinct values', 'Missing values', 'Mean', 'Median', 'Mode', 'Standard Deviation', 'Variance']

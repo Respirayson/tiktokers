@@ -2,17 +2,16 @@ import React, { useState } from "react";
 import Papa, { ParseResult } from "papaparse";
 import "./App.css";
 import { ModeToggle } from "./components/mode-toggle";
-import DataTable from "./components/DataTable/DataTable";
 import Sidebar from "./components/sidebar";
 import Navbar from "./components/floating-navbar";
 import { InputFile } from "./components/input-file";
-import AnalyticsTable from "./components/AnalyticsTable/AnalyticsTable";
-import {
-  mockHeaders,
-  mockRowData,
-  mockRowNames,
-} from "./components/AnalyticsTable/AnalyticsMockData";
 import axios from "axios";
+import DataColumns from "./components/DataTable/DataColumns";
+import AnalyticsColumns from "./components/AnalyticsTableRefactor/AnalyticsColumns";
+import { DataTable } from "./components/DataTable/DataTable";
+import { AnalyticsTable } from "./components/AnalyticsTableRefactor/AnalyticsTable";
+import { statisticsTitles } from "./components/AnalyticsTableRefactor/AnalyticsMockData";
+import { Separator } from "./components/ui/separator";
 
 function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
@@ -59,7 +58,10 @@ function App() {
     }
   };
 
-  const [selectedButton, setSelectedButton] = useState("Data");
+  const [selectedButton, setSelectedButton] = useState("Data")
+
+  const dataColumns = DataColumns(headers)
+  const analyticsColumns = AnalyticsColumns(headers)
 
   return (
     <>
@@ -79,15 +81,16 @@ function App() {
         )}
 
         {selectedButton === "Analytics" && (
-          <div className="flex flex-col items-center justify-center pt-20">
+          <div className="flex flex-col pt-20">
             <div className="w-full flex flex-col items-center justify-center">
-              <DataTable headers={headers} body={body} fileName={fileName} />
-              <hr className="h-px w-full my-2 bg-gray-200 border-0 dark:bg-gray-700"></hr>
-              <AnalyticsTable
-                headers={mockHeaders}
-                rowNames={mockRowNames}
-                rowData={mockRowData}
-              />
+              <div className='w-[70vw]'>
+                <DataTable columns={dataColumns} data={body} filename={fileName} />
+              </div>
+              <Separator className="my-4" />
+              <div className='w-[70vw]'>
+                {/* Analytics Table */}
+                <AnalyticsTable columns={analyticsColumns} data={body.slice(0, 8)} statisticTitles={statisticsTitles} />
+              </div>
             </div>
           </div>
         )}

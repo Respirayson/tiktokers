@@ -1,4 +1,4 @@
-import { AnalyticsTableProp } from './AnalyticsTable.type'
+import { AnalyticsTableProp } from "./AnalyticsTable.type";
 
 const AnalyticsTable = (prop: AnalyticsTableProp) => {
     const { headers, rowNames, rowData } = prop;
