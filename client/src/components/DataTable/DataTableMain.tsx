@@ -5,7 +5,7 @@ const DataTableMain = (props: any) => {
     const { columns, data } = props
 
     return (
-        <div className='w-[60vw]'>
+        <div className='w-[70vw]'>
             <DataTable columns={columns} data={data} />
         </div>
     )

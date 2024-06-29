@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Papa, { ParseResult } from "papaparse";
 import "./App.css";
 import { ModeToggle } from "./components/mode-toggle";
-import DataTable from "./components/DataTable/DataTable";
 import Sidebar from "./components/sidebar";
 import Navbar from "./components/floating-navbar";
 import { InputFile } from "./components/input-file";
@@ -13,8 +12,8 @@ import {
   mockRowNames,
 } from "./components/AnalyticsTable/AnalyticsMockData";
 import axios from "axios";
-import DataColumns from "./components/DataTableRefactor/DataColumns";
-import DataTableMain from "./components/DataTableRefactor/DataTableMain";
+import DataColumns from "./components/DataTable/DataColumns";
+import DataTableMain from "./components/DataTable/DataTableMain";
 
 function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
