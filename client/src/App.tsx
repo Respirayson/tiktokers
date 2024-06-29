@@ -9,7 +9,7 @@ import axios from "axios";
 import DataColumns from "./components/DataTable/DataColumns";
 import AnalyticsColumns from "./components/AnalyticsTableRefactor/AnalyticsColumns";
 import { DataTable } from "./components/DataTable/DataTable";
-import { AnalyticsTable } from "./components/AnalyticsTableRefactor/AnalyticsTable";
+import { AnalyticsTable, StatisticData } from "./components/AnalyticsTableRefactor/AnalyticsTable";
 import { statisticsTitles } from "./components/AnalyticsTableRefactor/AnalyticsMockData";
 import { Separator } from "./components/ui/separator";
 
@@ -18,7 +18,7 @@ function App() {
   const [body, setBody] = useState<Array<object>>([]);
   const [fileName, setFileName] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [statistics, setStatistics] = useState<Array<object>>([]);
+  const [statistics, setStatistics] = useState<Array<StatisticData<object>>>([]);
 
   const csvUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -104,21 +104,6 @@ function App() {
                   statisticTitles={statisticsTitles}
                 />
               </div>
-              {/* <div className="w-[70vw] mt-4">
-                <h3>Histograms</h3>
-                <div className="flex flex-wrap">
-                  {Object.keys(histograms).map((key) => (
-                    <div key={key} className="p-2">
-                      <h5>{key}</h5>
-                      <img
-                        src={`data:image/png;base64,${histograms[key]}`}
-                        alt={`Histogram of ${key}`}
-                        style={{ maxWidth: "200px", maxHeight: "150px" }}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div> */}
             </div>
           </div>
         )}

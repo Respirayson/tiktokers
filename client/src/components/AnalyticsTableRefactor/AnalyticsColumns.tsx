@@ -1,16 +1,17 @@
 import { ColumnDef } from "@tanstack/react-table";
+import { StatisticData } from "./AnalyticsTable";
 
-const AnalyticsColumns = <T extends Record<string, any>>(headers: string[]): ColumnDef<T>[] => {
-  const columns: ColumnDef<T>[] = headers.map((header: string) => ({
+const AnalyticsColumns = (headers: string[]): ColumnDef<StatisticData<object>>[] => {
+  const columns: ColumnDef<StatisticData<object>>[] = headers.map((header: string) => ({
     id: header,
     accessorKey: header,
     header: header,
     cell: ({ row }) => (
       <div className='lowercase'>{row.getValue(header)}</div>
-    )
-  }))
+    ),
+  }));
 
-  return columns
-}
+  return columns;
+};
 
-export default AnalyticsColumns
+export default AnalyticsColumns;

@@ -17,21 +17,21 @@ import {
 } from "@/components/ui/table"
 
 // Define a utility type that extends TData to include the statistic property
-type StatisticData<TData> = TData & {
+export type StatisticData<TData> = TData & {
     statistic: string;
 };
 
-interface AnalyticsTableProps<TData> {
-    columns: ColumnDef<StatisticData<TData>>[]
+interface AnalyticsTableProps<TData, TValue> {
+    columns: ColumnDef<StatisticData<TData>, TValue>[]
     data: StatisticData<TData>[]
     statisticTitles: string[]
 }
 
-export function AnalyticsTable<TData>({
+export function AnalyticsTable<TData, TValue>({
     columns,
     data,
     statisticTitles,
-}: AnalyticsTableProps<TData>) {
+}: AnalyticsTableProps<TData, TValue>) {
     const table = useReactTable({
         data,
         columns,
