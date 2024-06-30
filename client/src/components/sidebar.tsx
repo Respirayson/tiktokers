@@ -4,8 +4,23 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { MultiSelect } from "./multi-select";
+import { useState } from "react";
+import { Operation, OperationsBoxResponsive } from "./operations-box";
+import { Button } from "./ui/button";
 
-const Sidebar = () => {
+const Sidebar = ({
+  columnsList,
+  selectedButton,
+}: {
+  columnsList: string[];
+  selectedButton: string;
+}) => {
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [selectedOperation, setSelectedOperation] = useState<Operation | null>(
+    null
+  );
+
   return (
     <aside
       id="sidebar"
@@ -38,7 +53,9 @@ const Sidebar = () => {
           </svg>
           <span className="ml-3 text-base font-semibold">MLBB</span>
         </a>
-        <span className="mb-10 ml-3 font-thin text-left">Machine Learning Basics for Beginners</span>
+        <span className="mb-10 ml-3 font-thin text-left">
+          Machine Learning Basics for Beginners
+        </span>
 
         <Accordion type="single" collapsible className="w-full">
           <ul className="space-y-2 text-sm font-medium">
@@ -110,58 +127,90 @@ const Sidebar = () => {
               </AccordionItem>
             </li>
 
-            <li>
-              <AccordionItem value="item-2">
-                <AccordionTrigger>
-                  <a
-                    href="#"
-                    className="flex items-center rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="w-5 h-5 lucide lucide-wrench"
+            {selectedButton === "Analytics" && (
+              <li>
+                <AccordionItem value="item-2">
+                  <AccordionTrigger>
+                    <a
+                      href="#"
+                      className="flex items-center rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
                     >
-                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                    </svg>
-                    <span className="ml-3 whitespace-nowrap">
-                      Preprocessing Operations
-                    </span>
-                  </a>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <ul className="space-y-2 text-sm font-medium">
-                    <li>
-                      <a
-                        href="#"
-                        className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="w-5 h-5 lucide lucide-wrench"
                       >
-                        <span className="ml-3 whitespace-nowrap">
-                          Data Cleaning
-                        </span>
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
-                      >
-                        <span className="ml-3 whitespace-nowrap">
-                          Data Transformation
-                        </span>
-                      </a>
-                    </li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-            </li>
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                      </svg>
+                      <span className="ml-3 whitespace-nowrap">
+                        Preprocessing Operations
+                      </span>
+                    </a>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ul className="space-y-2 text-sm font-medium">
+                      {!selectedOperation && (
+                        <li>
+                          <OperationsBoxResponsive
+                            selectedOperation={selectedOperation}
+                            setSelectedOperation={setSelectedOperation}
+                          />
+                        </li>
+                      )}
+                      <li>
+                        {selectedOperation && (
+                          <div className="flex flex-col justify-center gap-4">
+                            <div className="flex flex-row gap-8">
+                              <a
+                                className="cursor-pointer"
+                                onClick={() => setSelectedOperation(null)}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className=" h-5 w-5 lucide lucide-arrow-left"
+                                >
+                                  <path d="m12 19-7-7 7-7" />
+                                  <path d="M19 12H5" />
+                                </svg>
+                              </a>
+                              <h3>{selectedOperation.label}</h3>
+                            </div>
+                            <MultiSelect
+                              options={columnsList.map((column) => ({
+                                value: column,
+                                label: column,
+                              }))}
+                              onValueChange={setSelectedColumns}
+                              defaultValue={selectedColumns}
+                              placeholder="Select columns"
+                              variant="inverted"
+                              animation={2}
+                              maxCount={3}
+                            />
+                            <Button variant="default">Apply</Button>
+                          </div>
+                        )}
+                      </li>
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              </li>
+            )}
 
             <li>
               <AccordionItem value="item-3">
@@ -243,6 +292,8 @@ const Sidebar = () => {
             </li>
           </ul>
         </Accordion>
+
+        <div className="flex flex-col mt-12 gap-4"></div>
 
         <div className="mt-auto flex">
           <div className="flex w-full justify-between">
