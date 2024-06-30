@@ -7,19 +7,64 @@ import {
 import { MultiSelect } from "./multi-select";
 import { useState } from "react";
 import { Operation, OperationsBoxResponsive } from "./operations-box";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import axios from "axios";
+import { DataTable } from "./DataTable/DataTable";
+import DataColumns from "./DataTable/DataColumns";
+
+const BASE_URL = "http://localhost:5000";
 
 const Sidebar = ({
+  fileName,
   columnsList,
   selectedButton,
+  setBody,
 }: {
+  fileName: string;
   columnsList: string[];
   selectedButton: string;
+  setBody: React.Dispatch<React.SetStateAction<object[]>>;
 }) => {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
   const [selectedOperation, setSelectedOperation] = useState<Operation | null>(
     null
   );
+  const [data, setData] = useState<object[]>([]);
+  const [open, setOpen] = useState(false);
+
+  const handlePreviewClick = async () => {
+    const response = await axios.post(
+      `${BASE_URL}/${selectedOperation?.value}/preview`,
+      {
+        filename: fileName,
+        target_column: selectedColumns[0],
+      }
+    );
+    console.log(response.data);
+    setData(response.data.data);
+  };
+
+  const handleClick = async () => {
+    const response = await axios.post(
+      `${BASE_URL}/${selectedOperation?.value}`,
+      {
+        filename: fileName,
+        target_column: selectedColumns[0],
+      }
+    );
+    console.log(response.data);
+    setBody(response.data.data);
+    setOpen(false);
+  };
 
   return (
     <aside
@@ -202,7 +247,36 @@ const Sidebar = ({
                               animation={2}
                               maxCount={3}
                             />
-                            <Button variant="default">Apply</Button>
+                            {/* <Button onClick={handleClick} variant="default">Apply</Button> */}
+                            <Dialog open={open} onOpenChange={setOpen}>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="default"
+                                  onClick={handlePreviewClick}
+                                >
+                                  Apply
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="min-w-[80%] overflow-auto h-[80%]">
+                                <DialogHeader>
+                                  <DialogTitle>Preview</DialogTitle>
+                                  <DialogDescription>
+                                    Preview you changes here. Click save when
+                                    you're done.
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <DataTable
+                                  data={data}
+                                  columns={DataColumns(columnsList)}
+                                  filename={fileName}
+                                />
+                                <DialogFooter>
+                                  <Button onClick={handleClick}>
+                                    Save changes
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
                           </div>
                         )}
                       </li>

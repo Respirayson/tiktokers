@@ -24,34 +24,44 @@ export type Operation = {
   label: string;
 };
 
-const operations: Operation[] = [
+const commonOperations: Operation[] = [
   {
-    value: "drop_duplicates",
-    label: "Drop duplicate rows",
+    value: "preprocessing/encode",
+    label: "Encode Categorical Variables",
   },
   {
-    value: "drop_missing",
-    label: "Drop missing values",
+    value: "preprocessing/scale",
+    label: "Scale Features",
   },
   {
-    value: "fill_missing",
-    label: "Fill missing values",
+    value: "preprocessing/features",
+    label: "Select Features",
   },
+];
+
+const classificationOperations: Operation[] = [
   {
-    value: "undersample",
-    label: "Undersample",
-  },
-  {
-    value: "oversample",
+    value: "exploration/oversample",
     label: "Oversample",
   },
   {
-    value: "impute",
-    label: "Impute missing values",
+    value: "exploration/smote",
+    label: "SMOTE",
   },
   {
-    value: "remove_outliers",
-    label: "Remove outliers",
+    value: "exploration/undersample",
+    label: "Undersample",
+  },
+];
+
+const regressionOperations: Operation[] = [
+  {
+    value: "exploration/impute",
+    label: "Impute Missing Values",
+  },
+  {
+    value: "exploration/outlier",
+    label: "Handle Outliers",
   },
 ];
 
@@ -64,7 +74,6 @@ export function OperationsBoxResponsive({
 }) {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
-  
 
   if (isDesktop) {
     return (
@@ -95,7 +104,7 @@ export function OperationsBoxResponsive({
           {selectedOperation ? (
             <>{selectedOperation.label}</>
           ) : (
-            <>+ Set operation</>
+            <>Search for an operation...</>
           )}
         </Button>
       </DrawerTrigger>
@@ -123,14 +132,48 @@ function StatusList({
       <CommandInput placeholder="Filter operation..." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup>
-          {operations.map((operation) => (
+        <CommandGroup heading="Common">
+          {commonOperations.map((operation) => (
             <CommandItem
               key={operation.value}
               value={operation.value}
               onSelect={(value) => {
                 setSelectedOperation(
-                  operations.find((priority) => priority.value === value) ||
+                  commonOperations.find((priority) => priority.value === value) ||
+                    null
+                );
+                setOpen(false);
+              }}
+            >
+              {operation.label}
+            </CommandItem>
+          ))}
+        </CommandGroup>
+        <CommandGroup heading="Classification">
+          {classificationOperations.map((operation) => (
+            <CommandItem
+              key={operation.value}
+              value={operation.value}
+              onSelect={(value) => {
+                setSelectedOperation(
+                  classificationOperations.find((priority) => priority.value === value) ||
+                    null
+                );
+                setOpen(false);
+              }}
+            >
+              {operation.label}
+            </CommandItem>
+          ))}
+        </CommandGroup>
+        <CommandGroup heading="Regression">
+          {regressionOperations.map((operation) => (
+            <CommandItem
+              key={operation.value}
+              value={operation.value}
+              onSelect={(value) => {
+                setSelectedOperation(
+                  regressionOperations.find((priority) => priority.value === value) ||
                     null
                 );
                 setOpen(false);

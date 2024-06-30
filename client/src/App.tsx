@@ -75,7 +75,7 @@ function App() {
 
   return (
     <>
-      <Sidebar selectedButton={selectedButton} columnsList={headers} />
+      <Sidebar setBody={setBody} fileName={fileName} selectedButton={selectedButton} columnsList={headers} />
       <Navbar
         selectedButton={selectedButton}
         setSelectedButton={setSelectedButton}
