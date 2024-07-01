@@ -111,11 +111,12 @@ class FileHandler(Resource):
             df[column].hist(bins=50)
             plt.axis('off')
 
-            min_val = df[column].min()
-            max_val = df[column].max()
+            if pd.api.types.is_numeric_dtype(df[column]):
+                min_val = df[column].min()
+                max_val = df[column].max()
+                plt.text(0.05, 0.95, f"Min {min_val}", transform=plt.gca().transAxes, verticalalignment='bottom', fontsize=20)
+                plt.text(0.95, 0.95, f"Max {max_val}", transform=plt.gca().transAxes, verticalalignment='bottom', horizontalalignment='right', fontsize=20)
 
-            plt.text(0.05, 0.95, f"Min {min_val}", transform=plt.gca().transAxes, verticalalignment='bottom', fontsize=20)
-            plt.text(0.95, 0.95, f"Max {max_val}", transform=plt.gca().transAxes, verticalalignment='bottom', horizontalalignment='right', fontsize=20)
 
             buffer = BytesIO()
             plt.savefig(buffer, format="png", bbox_inches='tight', pad_inches=0)

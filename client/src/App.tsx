@@ -18,6 +18,7 @@ import { Separator } from "./components/ui/separator";
 
 function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
+  const [analyticHeaders, setAnalyticHeaders] = useState<Array<string>>([]);
   const [body, setBody] = useState<Array<object>>([]);
   const [fileName, setFileName] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -35,6 +36,7 @@ function App() {
             console.log(results);
             if (results.meta.fields) {
               setHeaders(results.meta.fields);
+              setAnalyticHeaders(results.meta.fields);
             }
             setBody(results.data);
             setFileName(file.name);
@@ -70,12 +72,17 @@ function App() {
 
   const [selectedButton, setSelectedButton] = useState("Data");
 
-  const dataColumns = DataColumns(headers);
-  const analyticsColumns = AnalyticsColumns(headers);
+  const analyticsColumns = AnalyticsColumns(analyticHeaders);
 
   return (
     <>
-      <Sidebar setBody={setBody} fileName={fileName} selectedButton={selectedButton} columnsList={headers} />
+      <Sidebar
+        setBody={setBody}
+        fileName={fileName}
+        selectedButton={selectedButton}
+        columnsList={headers}
+        setColumnsList={setHeaders}
+      />
       <Navbar
         selectedButton={selectedButton}
         setSelectedButton={setSelectedButton}
@@ -88,7 +95,11 @@ function App() {
       <div className="pl-[16rem]">
         {selectedButton === "Data" && (
           <div className="flex flex-row justify-center items-center w-full h-screen">
-            <Dropzone fileName={fileName} handleOnDrop={csvUpload} isLoading={isLoading} />
+            <Dropzone
+              fileName={fileName}
+              handleOnDrop={csvUpload}
+              isLoading={isLoading}
+            />
           </div>
         )}
 
@@ -97,7 +108,7 @@ function App() {
             <div className="w-full flex flex-col items-center justify-center">
               <div className="w-[70vw]">
                 <DataTable
-                  columns={dataColumns}
+                  columns={DataColumns(headers)}
                   data={body}
                   filename={fileName}
                 />

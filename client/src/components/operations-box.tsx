@@ -18,6 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { CommandSeparator } from "cmdk";
 
 export type Operation = {
   value: string;
@@ -149,6 +150,7 @@ function StatusList({
             </CommandItem>
           ))}
         </CommandGroup>
+        <CommandSeparator />
         <CommandGroup heading="Classification">
           {classificationOperations.map((operation) => (
             <CommandItem
@@ -166,6 +168,7 @@ function StatusList({
             </CommandItem>
           ))}
         </CommandGroup>
+        <CommandSeparator />
         <CommandGroup heading="Regression">
           {regressionOperations.map((operation) => (
             <CommandItem

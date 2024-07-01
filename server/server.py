@@ -16,9 +16,7 @@ from routes.explorationapi import (
     ImputeHandler,
     OutlierHandler,
     SmoteHandler,
-    OversamplePreviewHandler,
-    SmotePreviewHandler,
-    UndersamplePreviewHandler,
+    UpdateHandler
 )
 from routes.preprocessingapi import EncodeHandler, ScaleHandler, SelectFeaturesHandler
 from logging.handlers import RotatingFileHandler
@@ -82,15 +80,14 @@ def start_app():
         conn.close()
 
         api.add_resource(FileHandler, "/upload")
+        api.add_resource(UpdateHandler, "/update")
+
         api.add_resource(OversampleHandler, "/exploration/oversample")
-        api.add_resource(OversamplePreviewHandler, "/exploration/oversample/preview")
         api.add_resource(SmoteHandler, "/exploration/smote")
-        api.add_resource(SmotePreviewHandler, "/exploration/smote/preview")
         api.add_resource(UndersampleHandler, "/exploration/undersample")
-        api.add_resource(UndersamplePreviewHandler, "/exploration/undersample/preview")
-        
         api.add_resource(ImputeHandler, "/exploration/impute")
         api.add_resource(OutlierHandler, "/exploration/outlier")
+        
         api.add_resource(EncodeHandler, "/preprocessing/encode")
         api.add_resource(ScaleHandler, "/preprocessing/scale")
         api.add_resource(SelectFeaturesHandler, "/preprocessing/features")

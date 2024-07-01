@@ -4,6 +4,16 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { MultiSelect } from "./multi-select";
 import { useState } from "react";
 import { Operation, OperationsBoxResponsive } from "./operations-box";
@@ -26,44 +36,77 @@ const BASE_URL = "http://localhost:5000";
 const Sidebar = ({
   fileName,
   columnsList,
+  setColumnsList,
   selectedButton,
   setBody,
 }: {
   fileName: string;
   columnsList: string[];
+  setColumnsList: React.Dispatch<React.SetStateAction<string[]>>;
   selectedButton: string;
   setBody: React.Dispatch<React.SetStateAction<object[]>>;
 }) => {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [previewColumnsList, setPreviewColumnsList] = useState<string[]>(columnsList);
+  const [targetColumn, setTargetColumn] = useState<string>("");
   const [selectedOperation, setSelectedOperation] = useState<Operation | null>(
     null
   );
   const [data, setData] = useState<object[]>([]);
   const [open, setOpen] = useState(false);
+  const isSingleOperation = [
+    "exploration/oversample",
+    "exploration/smote",
+    "exploration/undersample",
+  ];
 
   const handlePreviewClick = async () => {
+    const reqBody: {
+      filename: string;
+      target_column?: string;
+      columns?: string[];
+      strategy?: string;
+      threshold?: number;
+    } = {
+      filename: fileName,
+    };
+
+    if (isSingleOperation.includes(selectedOperation?.value ?? "")) {
+      reqBody.target_column = targetColumn;
+    } else if (selectedOperation?.value === "exploration/impute") {
+      reqBody.strategy = targetColumn;
+    } else if (selectedOperation?.value === "preprocessing/features") {
+      reqBody.threshold = parseFloat(targetColumn);
+    } else {
+      reqBody.columns = selectedColumns;
+    }
+
     const response = await axios.post(
-      `${BASE_URL}/${selectedOperation?.value}/preview`,
-      {
-        filename: fileName,
-        target_column: selectedColumns[0],
-      }
+      `${BASE_URL}/${selectedOperation?.value}`,
+      reqBody
     );
-    console.log(response.data);
-    setData(response.data.data);
+    let responseData = response.data;
+
+    // Check if responseData is a JSON string
+    if (typeof responseData === "string") {
+      responseData = JSON.parse(responseData);
+    }
+
+    setPreviewColumnsList(Object.keys(responseData.data[0]));
+    setData(responseData.data);
   };
 
   const handleClick = async () => {
-    const response = await axios.post(
-      `${BASE_URL}/${selectedOperation?.value}`,
-      {
-        filename: fileName,
-        target_column: selectedColumns[0],
-      }
-    );
+    const response = await axios.post(`${BASE_URL}/update`, {
+      filename: fileName,
+      data: data,
+    });
     console.log(response.data);
-    setBody(response.data.data);
+    setBody(data);
+    setColumnsList(previewColumnsList)
     setOpen(false);
+    setSelectedColumns([]);
+    setTargetColumn("");
   };
 
   return (
@@ -235,18 +278,58 @@ const Sidebar = ({
                               </a>
                               <h3>{selectedOperation.label}</h3>
                             </div>
-                            <MultiSelect
-                              options={columnsList.map((column) => ({
-                                value: column,
-                                label: column,
-                              }))}
-                              onValueChange={setSelectedColumns}
-                              defaultValue={selectedColumns}
-                              placeholder="Select columns"
-                              variant="inverted"
-                              animation={2}
-                              maxCount={3}
-                            />
+                            {selectedOperation?.value ===
+                            "exploration/impute" || selectedOperation?.value === "preprocessing/features" ? (
+                              <>
+                                <Input
+                                  type="string"
+                                  placeholder={
+                                    selectedOperation.value ===
+                                    "exploration/impute"
+                                      ? "Eg. mean / median / mode" // for impute strategy
+                                      : "Enter threshold" // for select features threshold
+                                  }
+                                  value={targetColumn}
+                                  onChange={(e) =>
+                                    setTargetColumn(e.target.value)
+                                  }
+                                />
+                              </>
+                            ) : isSingleOperation.includes(
+                                selectedOperation?.value
+                              ) ? (
+                              <Select
+                                onValueChange={setTargetColumn}
+                                value={targetColumn}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select the target column" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    <SelectLabel>Columns</SelectLabel>
+                                    {columnsList.map((column) => (
+                                      <SelectItem key={column} value={column}>
+                                        {column}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <MultiSelect
+                                options={columnsList.map((column) => ({
+                                  value: column,
+                                  label: column,
+                                }))}
+                                onValueChange={setSelectedColumns}
+                                defaultValue={selectedColumns}
+                                placeholder="Select columns"
+                                variant="inverted"
+                                animation={2}
+                                maxCount={3}
+                              />
+                            )}
                             {/* <Button onClick={handleClick} variant="default">Apply</Button> */}
                             <Dialog open={open} onOpenChange={setOpen}>
                               <DialogTrigger asChild>
@@ -267,7 +350,7 @@ const Sidebar = ({
                                 </DialogHeader>
                                 <DataTable
                                   data={data}
-                                  columns={DataColumns(columnsList)}
+                                  columns={DataColumns(previewColumnsList)}
                                   filename={fileName}
                                 />
                                 <DialogFooter>
