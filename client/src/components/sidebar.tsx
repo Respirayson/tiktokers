@@ -4,8 +4,111 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { MultiSelect } from "./multi-select";
+import { useState } from "react";
+import { Operation, OperationsBoxResponsive } from "./operations-box";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import axios from "axios";
+import { DataTable } from "./DataTable/DataTable";
+import DataColumns from "./DataTable/DataColumns";
 
-const Sidebar = () => {
+const BASE_URL = "http://localhost:5000";
+
+const Sidebar = ({
+  fileName,
+  columnsList,
+  setColumnsList,
+  selectedButton,
+  setBody,
+}: {
+  fileName: string;
+  columnsList: string[];
+  setColumnsList: React.Dispatch<React.SetStateAction<string[]>>;
+  selectedButton: string;
+  setBody: React.Dispatch<React.SetStateAction<object[]>>;
+}) => {
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [previewColumnsList, setPreviewColumnsList] = useState<string[]>(columnsList);
+  const [targetColumn, setTargetColumn] = useState<string>("");
+  const [selectedOperation, setSelectedOperation] = useState<Operation | null>(
+    null
+  );
+  const [data, setData] = useState<object[]>([]);
+  const [open, setOpen] = useState(false);
+  const isSingleOperation = [
+    "exploration/oversample",
+    "exploration/smote",
+    "exploration/undersample",
+  ];
+
+  const handlePreviewClick = async () => {
+    const reqBody: {
+      filename: string;
+      target_column?: string;
+      columns?: string[];
+      strategy?: string;
+      threshold?: number;
+    } = {
+      filename: fileName,
+    };
+
+    if (isSingleOperation.includes(selectedOperation?.value ?? "")) {
+      reqBody.target_column = targetColumn;
+    } else if (selectedOperation?.value === "exploration/impute") {
+      reqBody.strategy = targetColumn;
+    } else if (selectedOperation?.value === "preprocessing/features") {
+      reqBody.threshold = parseFloat(targetColumn);
+    } else {
+      reqBody.columns = selectedColumns;
+    }
+
+    const response = await axios.post(
+      `${BASE_URL}/${selectedOperation?.value}`,
+      reqBody
+    );
+    let responseData = response.data;
+
+    // Check if responseData is a JSON string
+    if (typeof responseData === "string") {
+      responseData = JSON.parse(responseData);
+    }
+
+    setPreviewColumnsList(Object.keys(responseData.data[0]));
+    setData(responseData.data);
+  };
+
+  const handleClick = async () => {
+    const response = await axios.post(`${BASE_URL}/update`, {
+      filename: fileName,
+      data: data,
+    });
+    console.log(response.data);
+    setBody(data);
+    setColumnsList(previewColumnsList)
+    setOpen(false);
+    setSelectedColumns([]);
+    setTargetColumn("");
+  };
+
   return (
     <aside
       id="sidebar"
@@ -24,9 +127,9 @@ const Sidebar = () => {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             className="h-5 w-5 lucide lucide-bot"
           >
             <path d="M12 8V4H8" />
@@ -38,7 +141,9 @@ const Sidebar = () => {
           </svg>
           <span className="ml-3 text-base font-semibold">MLBB</span>
         </a>
-        <span className="mb-10 ml-3 font-thin text-left">Machine Learning Basics for Beginners</span>
+        <span className="mb-10 ml-3 font-thin text-left">
+          Machine Learning Basics for Beginners
+        </span>
 
         <Accordion type="single" collapsible className="w-full">
           <ul className="space-y-2 text-sm font-medium">
@@ -56,9 +161,9 @@ const Sidebar = () => {
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       className="h-5 w-5 lucide lucide-brain-cog"
                     >
                       <path d="M12 5a3 3 0 1 0-5.997.142 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588 4 4 0 0 0 7.636 2.106 3.2 3.2 0 0 0 .164-.546c.028-.13.306-.13.335 0a3.2 3.2 0 0 0 .163.546 4 4 0 0 0 7.636-2.106 4 4 0 0 0 .556-6.588 4 4 0 0 0-2.526-5.77A3 3 0 1 0 12 5" />
@@ -110,58 +215,159 @@ const Sidebar = () => {
               </AccordionItem>
             </li>
 
-            <li>
-              <AccordionItem value="item-2">
-                <AccordionTrigger>
-                  <a
-                    href="#"
-                    className="flex items-center rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      className="w-5 h-5 lucide lucide-wrench"
+            {selectedButton === "Analytics" && (
+              <li>
+                <AccordionItem value="item-2">
+                  <AccordionTrigger>
+                    <a
+                      href="#"
+                      className="flex items-center rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
                     >
-                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                    </svg>
-                    <span className="ml-3 whitespace-nowrap">
-                      Preprocessing Operations
-                    </span>
-                  </a>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <ul className="space-y-2 text-sm font-medium">
-                    <li>
-                      <a
-                        href="#"
-                        className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="w-5 h-5 lucide lucide-wrench"
                       >
-                        <span className="ml-3 whitespace-nowrap">
-                          Data Cleaning
-                        </span>
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
-                      >
-                        <span className="ml-3 whitespace-nowrap">
-                          Data Transformation
-                        </span>
-                      </a>
-                    </li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-            </li>
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                      </svg>
+                      <span className="ml-3 whitespace-nowrap">
+                        Preprocessing Operations
+                      </span>
+                    </a>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ul className="space-y-2 text-sm font-medium">
+                      {!selectedOperation && (
+                        <li>
+                          <OperationsBoxResponsive
+                            selectedOperation={selectedOperation}
+                            setSelectedOperation={setSelectedOperation}
+                          />
+                        </li>
+                      )}
+                      <li>
+                        {selectedOperation && (
+                          <div className="flex flex-col justify-center gap-4">
+                            <div className="flex flex-row gap-8">
+                              <a
+                                className="cursor-pointer"
+                                onClick={() => setSelectedOperation(null)}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className=" h-5 w-5 lucide lucide-arrow-left"
+                                >
+                                  <path d="m12 19-7-7 7-7" />
+                                  <path d="M19 12H5" />
+                                </svg>
+                              </a>
+                              <h3>{selectedOperation.label}</h3>
+                            </div>
+                            {selectedOperation?.value ===
+                            "exploration/impute" || selectedOperation?.value === "preprocessing/features" ? (
+                              <>
+                                <Input
+                                  type="string"
+                                  placeholder={
+                                    selectedOperation.value ===
+                                    "exploration/impute"
+                                      ? "Eg. mean / median / mode" // for impute strategy
+                                      : "Enter threshold" // for select features threshold
+                                  }
+                                  value={targetColumn}
+                                  onChange={(e) =>
+                                    setTargetColumn(e.target.value)
+                                  }
+                                />
+                              </>
+                            ) : isSingleOperation.includes(
+                                selectedOperation?.value
+                              ) ? (
+                              <Select
+                                onValueChange={setTargetColumn}
+                                value={targetColumn}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select the target column" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectGroup>
+                                    <SelectLabel>Columns</SelectLabel>
+                                    {columnsList.map((column) => (
+                                      <SelectItem key={column} value={column}>
+                                        {column}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectGroup>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <MultiSelect
+                                options={columnsList.map((column) => ({
+                                  value: column,
+                                  label: column,
+                                }))}
+                                onValueChange={setSelectedColumns}
+                                defaultValue={selectedColumns}
+                                placeholder="Select columns"
+                                variant="inverted"
+                                animation={2}
+                                maxCount={3}
+                              />
+                            )}
+                            {/* <Button onClick={handleClick} variant="default">Apply</Button> */}
+                            <Dialog open={open} onOpenChange={setOpen}>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="default"
+                                  onClick={handlePreviewClick}
+                                >
+                                  Apply
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="min-w-[80%] overflow-auto h-[80%]">
+                                <DialogHeader>
+                                  <DialogTitle>Preview</DialogTitle>
+                                  <DialogDescription>
+                                    Preview you changes here. Click save when
+                                    you're done.
+                                  </DialogDescription>
+                                </DialogHeader>
+                                <DataTable
+                                  data={data}
+                                  columns={DataColumns(previewColumnsList)}
+                                  filename={fileName}
+                                />
+                                <DialogFooter>
+                                  <Button onClick={handleClick}>
+                                    Save changes
+                                  </Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+                        )}
+                      </li>
+                    </ul>
+                  </AccordionContent>
+                </AccordionItem>
+              </li>
+            )}
 
             <li>
               <AccordionItem value="item-3">
@@ -179,9 +385,9 @@ const Sidebar = () => {
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     >
                       <path d="M16.5 9.4 7.55 4.24" />
                       <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
@@ -231,9 +437,9 @@ const Sidebar = () => {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
                   <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
                   <circle cx="12" cy="12" r="3" />
@@ -243,6 +449,8 @@ const Sidebar = () => {
             </li>
           </ul>
         </Accordion>
+
+        <div className="flex flex-col mt-12 gap-4"></div>
 
         <div className="mt-auto flex">
           <div className="flex w-full justify-between">
@@ -257,10 +465,10 @@ const Sidebar = () => {
               aria-roledescription="more menu"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
+              strokeWidth="2"
               className="h-5 w-5 text-black dark:text-white lucide lucide-more-horizontal"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
               <circle cx="12" cy="12" r="1" />
               <circle cx="19" cy="12" r="1" />

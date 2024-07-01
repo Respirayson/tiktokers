@@ -37,7 +37,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
-    filename: String
+    filename: string
 }
 
 export function DataTable<TData, TValue>({
@@ -107,7 +107,7 @@ export function DataTable<TData, TValue>({
                             <p className="text-sm font-medium">Rows per page</p>
                             <Select
                                 value={`${table.getState().pagination.pageSize}`}
-                                onValueChange={(value: any) => {
+                                onValueChange={(value: string) => {
                                     table.setPageSize(Number(value))
                                 }}
                             >
@@ -218,7 +218,7 @@ export function DataTable<TData, TValue>({
             {/* Bottom Pagination */}
             <div className="flex items-center justify-between px-2 py-4">
                 <div className="text-sm text-muted-foreground mx-4">
-                    {table.getFilteredRowModel().rows.length} row(s) of data entries.
+                    {table.getFilteredRowModel().rows.length} row(s) x {table.getAllColumns().length} column(s).
                 </div>
                 <div className="flex items-center space-x-6 lg:space-x-8">
                     <div className="flex w-[100px] items-center justify-center text-sm font-medium">
