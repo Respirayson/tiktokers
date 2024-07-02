@@ -55,7 +55,7 @@ function App() {
 
             try {
               const response = await axios.post(
-                "http://localhost:5000/upload",
+                "http://localhost:5001/upload",
                 formData,
                 {
                   headers: {

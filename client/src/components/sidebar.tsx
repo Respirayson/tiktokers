@@ -31,7 +31,7 @@ import axios from "axios";
 import { DataTable } from "./DataTable/DataTable";
 import DataColumns from "./DataTable/DataColumns";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "http://localhost:5001";
 
 const Sidebar = ({
   fileName,
