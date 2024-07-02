@@ -30,6 +30,7 @@ import {
 import axios from "axios";
 import { DataTable } from "./DataTable/DataTable";
 import DataColumns from "./DataTable/DataColumns";
+import { toast } from "react-toastify";
 
 const BASE_URL = "http://localhost:5001";
 
@@ -84,32 +85,44 @@ const Sidebar = ({
       reqBody.columns = selectedColumns;
     }
 
-    const response = await axios.post(
-      `${BASE_URL}/${selectedOperation?.value}`,
-      reqBody
-    );
-    let responseData = response.data;
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/${selectedOperation?.value}`,
+        reqBody
+      );
+      let responseData = response.data;
 
-    // Check if responseData is a JSON string
-    if (typeof responseData === "string") {
-      responseData = JSON.parse(responseData);
+      // Check if responseData is a JSON string
+      if (typeof responseData === "string") {
+        responseData = JSON.parse(responseData);
+      }
+
+      setPreviewColumnsList(Object.keys(responseData.data[0]));
+      setData(responseData.data);
+      toast.success("Preview generated successfully!");
+    } catch (error) {
+      console.error("Error generating preview:", error);
+      toast.error("Error generating preview!");
     }
-
-    setPreviewColumnsList(Object.keys(responseData.data[0]));
-    setData(responseData.data);
   };
 
   const handleClick = async () => {
-    const response = await axios.post(`${BASE_URL}/update`, {
-      filename: fileName,
-      data: data,
-    });
-    console.log(response.data);
-    setBody(data);
-    setColumnsList(previewColumnsList);
-    setOpen(false);
-    setSelectedColumns([]);
-    setTargetColumn("");
+    try {
+      const response = await axios.post(`${BASE_URL}/update`, {
+        filename: fileName,
+        data: data,
+      });
+      console.log(response.data);
+      setBody(data);
+      setColumnsList(previewColumnsList);
+      setOpen(false);
+      setSelectedColumns([]);
+      setTargetColumn("");
+      toast.success("Changes saved successfully!");
+    } catch (error) {
+      console.error("Error updating file:", error);
+      toast.error("Error saving changes!");
+    }
   };
 
   return (

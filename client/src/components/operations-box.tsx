@@ -38,6 +38,14 @@ const commonOperations: Operation[] = [
     value: "preprocessing/features",
     label: "Select Features",
   },
+  {
+    value: "exploration/impute",
+    label: "Impute Missing Values",
+  },
+  {
+    value: "exploration/outlier",
+    label: "Handle Outliers",
+  },
 ];
 
 const classificationOperations: Operation[] = [
@@ -55,16 +63,7 @@ const classificationOperations: Operation[] = [
   },
 ];
 
-const regressionOperations: Operation[] = [
-  {
-    value: "exploration/impute",
-    label: "Impute Missing Values",
-  },
-  {
-    value: "exploration/outlier",
-    label: "Handle Outliers",
-  },
-];
+const regressionOperations: Operation[] = [];
 
 export function OperationsBoxResponsive({
   selectedOperation,
@@ -140,8 +139,9 @@ function StatusList({
               value={operation.value}
               onSelect={(value) => {
                 setSelectedOperation(
-                  commonOperations.find((priority) => priority.value === value) ||
-                    null
+                  commonOperations.find(
+                    (priority) => priority.value === value
+                  ) || null
                 );
                 setOpen(false);
               }}
@@ -158,8 +158,9 @@ function StatusList({
               value={operation.value}
               onSelect={(value) => {
                 setSelectedOperation(
-                  classificationOperations.find((priority) => priority.value === value) ||
-                    null
+                  classificationOperations.find(
+                    (priority) => priority.value === value
+                  ) || null
                 );
                 setOpen(false);
               }}
@@ -176,8 +177,9 @@ function StatusList({
               value={operation.value}
               onSelect={(value) => {
                 setSelectedOperation(
-                  regressionOperations.find((priority) => priority.value === value) ||
-                    null
+                  regressionOperations.find(
+                    (priority) => priority.value === value
+                  ) || null
                 );
                 setOpen(false);
               }}
