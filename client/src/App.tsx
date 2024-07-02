@@ -16,6 +16,7 @@ import {
 import { statisticsTitles } from "./components/AnalyticsTableRefactor/AnalyticsMockData";
 import { Separator } from "./components/ui/separator";
 import { v4 as uuidv4 } from "uuid";
+import { ToastContainer, toast } from "react-toastify";
 
 function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
@@ -67,8 +68,11 @@ function App() {
               setStatistics(response.data.statistics);
               setSelectedButton("Analytics");
               setIsLoading(false);
+              toast.success("File uploaded successfully!");
             } catch (error) {
+              toast.error("Error uploading file!");
               console.error("Error uploading file:", error);
+              setIsLoading(false);
             }
           },
           header: true,
@@ -85,6 +89,7 @@ function App() {
 
   return (
     <>
+      <ToastContainer />
       <Sidebar
         setBody={setBody}
         fileName={fileName}
@@ -106,7 +111,7 @@ function App() {
         {selectedButton === "Data" && (
           <div className="flex flex-row justify-center items-center w-full h-screen">
             <Dropzone
-              fileName={fileName}
+              fileName={displayName}
               handleOnDrop={csvUpload}
               isLoading={isLoading}
             />
