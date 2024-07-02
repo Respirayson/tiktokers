@@ -65,11 +65,11 @@ def start_app():
         api = Api(app)
 
         conn = psycopg2.connect(
-            host=os.getenv("HOST"),
+            host=os.getenv("DB_HOST"),
             dbname=os.getenv("DATABASE"),
             user=os.getenv("DB_USERNAME"),
             password=os.getenv("DB_PASSWORD"),
-            port=os.getenv("PORT"),
+            port=os.getenv("DB_PORT"),
         )
 
         # Test the db connection

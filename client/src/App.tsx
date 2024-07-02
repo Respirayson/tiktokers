@@ -15,12 +15,14 @@ import {
 } from "./components/AnalyticsTableRefactor/AnalyticsTable";
 import { statisticsTitles } from "./components/AnalyticsTableRefactor/AnalyticsMockData";
 import { Separator } from "./components/ui/separator";
+import { v4 as uuidv4 } from "uuid";
 
 function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
   const [analyticHeaders, setAnalyticHeaders] = useState<Array<string>>([]);
   const [body, setBody] = useState<Array<object>>([]);
   const [fileName, setFileName] = useState<string>("");
+  const [displayName, setDisplayName] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [statistics, setStatistics] = useState<Array<StatisticData<object>>>(
     []
@@ -39,14 +41,21 @@ function App() {
               setAnalyticHeaders(results.meta.fields);
             }
             setBody(results.data);
-            setFileName(file.name);
+
+            const newFileName = uuidv4() + ".csv";
+            console.log(newFileName);
+            setFileName(newFileName);
+            setDisplayName(file.name);
 
             const formData = new FormData();
-            formData.append("file", file);
+            formData.append(
+              "file",
+              new File([file], newFileName, { type: "text/csv" })
+            );
 
             try {
               const response = await axios.post(
-                "http://localhost:5000/upload",
+                "http://localhost:5001/upload",
                 formData,
                 {
                   headers: {
@@ -79,6 +88,7 @@ function App() {
       <Sidebar
         setBody={setBody}
         fileName={fileName}
+        displayName={displayName}
         selectedButton={selectedButton}
         columnsList={headers}
         setColumnsList={setHeaders}
@@ -110,7 +120,7 @@ function App() {
                 <DataTable
                   columns={DataColumns(headers)}
                   data={body}
-                  filename={fileName}
+                  filename={displayName}
                 />
               </div>
               <Separator className="my-4" />
