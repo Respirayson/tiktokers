@@ -39,15 +39,18 @@ const Sidebar = ({
   setColumnsList,
   selectedButton,
   setBody,
+  displayName,
 }: {
   fileName: string;
   columnsList: string[];
   setColumnsList: React.Dispatch<React.SetStateAction<string[]>>;
   selectedButton: string;
   setBody: React.Dispatch<React.SetStateAction<object[]>>;
+  displayName: string;
 }) => {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
-  const [previewColumnsList, setPreviewColumnsList] = useState<string[]>(columnsList);
+  const [previewColumnsList, setPreviewColumnsList] =
+    useState<string[]>(columnsList);
   const [targetColumn, setTargetColumn] = useState<string>("");
   const [selectedOperation, setSelectedOperation] = useState<Operation | null>(
     null
@@ -103,7 +106,7 @@ const Sidebar = ({
     });
     console.log(response.data);
     setBody(data);
-    setColumnsList(previewColumnsList)
+    setColumnsList(previewColumnsList);
     setOpen(false);
     setSelectedColumns([]);
     setTargetColumn("");
@@ -279,7 +282,9 @@ const Sidebar = ({
                               <h3>{selectedOperation.label}</h3>
                             </div>
                             {selectedOperation?.value ===
-                            "exploration/impute" || selectedOperation?.value === "preprocessing/features" ? (
+                              "exploration/impute" ||
+                            selectedOperation?.value ===
+                              "preprocessing/features" ? (
                               <>
                                 <Input
                                   type="string"
@@ -351,7 +356,7 @@ const Sidebar = ({
                                 <DataTable
                                   data={data}
                                   columns={DataColumns(previewColumnsList)}
-                                  filename={fileName}
+                                  filename={displayName}
                                 />
                                 <DialogFooter>
                                   <Button onClick={handleClick}>
