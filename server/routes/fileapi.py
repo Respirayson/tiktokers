@@ -8,6 +8,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
+import seaborn as sns
 
 
 load_dotenv()
@@ -46,7 +47,8 @@ class FileHandler(Resource):
             # Parse CSV and compute statistics
             df = pd.read_csv(file_path)
             stats = self.compute_statistics(df)
-            return jsonify({"name": filename, "status": "success", "statistics": stats})
+            heatmap = self.create_heatmap(filename)
+            return jsonify({"name": filename, "status": "success", "statistics": stats, "heatmap": heatmap})
         else:
             return jsonify(
                 {"message": "File type not allowed", "status": "unsuccessful"}
@@ -132,3 +134,17 @@ class FileHandler(Resource):
             formatted_stats.append(row)
 
         return formatted_stats
+    
+    def create_heatmap(self, filename):
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        data = pd.read_csv(filepath, index_col=0)
+        corr = data.corr()
+        sns.heatmap(corr, annot=True, cmap='coolwarm')
+        plt.title('Correlation Heatmap of Data')
+        buffer = BytesIO()
+        plt.savefig(buffer, format="png", bbox_inches='tight', pad_inches=0)
+        buffer.seek(0)
+        heatmap = base64.b64encode(buffer.getvalue()).decode('utf-8')
+        plt.close()
+        return heatmap
+
