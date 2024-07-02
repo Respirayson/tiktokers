@@ -14,7 +14,7 @@ DEFAULT_LEVELS = {
 }
 
 SERVER_ERROR_TIMER=60
-SERVER_PORT = '5000'
+SERVER_PORT = '5001'
 #LOG_DIR = '/var/log'
 LOG_DIR = './logs/'
 LOG_FILE = LOG_DIR+'/server.log'
