@@ -37,7 +37,6 @@ function App() {
       if (file) {
         Papa.parse<File, Papa.LocalFile>(file, {
           complete: async (results: ParseResult<File>) => {
-            console.log(results);
             if (results.meta.fields) {
               setHeaders(results.meta.fields);
               setAnalyticHeaders(results.meta.fields);
@@ -68,7 +67,6 @@ function App() {
               console.log("File successfully uploaded:", response.data);
               setStatistics(response.data.statistics);
               setHeatmap(response.data.heatmap);
-              console.log(response.data.heatmap);
               setSelectedButton("Analytics");
               setIsLoading(false);
               toast.success("File uploaded successfully!");
