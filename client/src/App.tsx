@@ -28,6 +28,7 @@ function App() {
   const [statistics, setStatistics] = useState<Array<StatisticData<object>>>(
     []
   );
+  const [heatmap, setHeatmap] = useState<string>("")
 
   const csvUpload = async (files: FileList | null) => {
     if (files) {
@@ -36,7 +37,6 @@ function App() {
       if (file) {
         Papa.parse<File, Papa.LocalFile>(file, {
           complete: async (results: ParseResult<File>) => {
-            console.log(results);
             if (results.meta.fields) {
               setHeaders(results.meta.fields);
               setAnalyticHeaders(results.meta.fields);
@@ -66,6 +66,7 @@ function App() {
               );
               console.log("File successfully uploaded:", response.data);
               setStatistics(response.data.statistics);
+              setHeatmap(response.data.heatmap);
               setSelectedButton("Analytics");
               setIsLoading(false);
               toast.success("File uploaded successfully!");
@@ -137,6 +138,11 @@ function App() {
                   statisticTitles={statisticsTitles}
                 />
               </div>
+              <img
+                src={`data:image/png;base64,${heatmap}`}
+                alt={`Heatmap of all variables`}
+                className="w-[70vw] mt-10"
+              />
             </div>
           </div>
         )}
