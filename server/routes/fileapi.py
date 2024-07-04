@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
 import seaborn as sns
+import numpy as np
 
 
 load_dotenv()
@@ -137,10 +138,18 @@ class FileHandler(Resource):
     
     def create_heatmap(self, filename):
         filepath = os.path.join(UPLOAD_FOLDER, filename)
-        data = pd.read_csv(filepath, index_col=0)
-        corr = data.corr()
+        data = pd.read_csv(filepath)
+
+        # Filter out non-numeric columns
+        numeric_data = data.select_dtypes(include=[np.number])
+
+        # Compute correlation matrix
+        corr = numeric_data.corr()
+
+        plt.figure(figsize=(10, 8))
         sns.heatmap(corr, annot=True, cmap='coolwarm')
         plt.title('Correlation Heatmap of Data')
+        
         buffer = BytesIO()
         plt.savefig(buffer, format="png", bbox_inches='tight', pad_inches=0)
         buffer.seek(0)

@@ -41,6 +41,11 @@ const Sidebar = ({
   selectedButton,
   setBody,
   displayName,
+  hiddenLayers,
+  epochs,
+  setHiddenLayers,
+  setEpochs,
+  setSelectedButton,
 }: {
   fileName: string;
   columnsList: string[];
@@ -48,6 +53,11 @@ const Sidebar = ({
   selectedButton: string;
   setBody: React.Dispatch<React.SetStateAction<object[]>>;
   displayName: string;
+  hiddenLayers: string;
+  epochs: number;
+  setHiddenLayers: React.Dispatch<React.SetStateAction<string>>;
+  setEpochs: React.Dispatch<React.SetStateAction<number>>;
+  setSelectedButton: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
   const [previewColumnsList, setPreviewColumnsList] =
@@ -63,6 +73,24 @@ const Sidebar = ({
     "exploration/smote",
     "exploration/undersample",
   ];
+
+  const handleTrain = async () => {
+    try {
+      setSelectedButton("Results")
+      const response = await axios.post("http://localhost:5001/train", {
+        filename: fileName,
+        target_column: targetColumn,
+        hidden_layers: hiddenLayers.split(",").map((v) => parseInt(v.trim())),
+        epochs: epochs,
+        selected_columns: selectedColumns,
+      });
+      console.log(response.data);
+      toast.info("Training started!");
+    } catch (error) {
+      toast.error("Error starting training!");
+      console.error("Error starting training:", error);
+    }
+  };
 
   const handlePreviewClick = async () => {
     const reqBody: {
@@ -417,7 +445,7 @@ const Sidebar = ({
                 </AccordionTrigger>
                 <AccordionContent>
                   <ul className="space-y-2 text-sm font-medium">
-                    <li>
+                    {/* <li>
                       <a
                         href="#"
                         className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
@@ -436,6 +464,53 @@ const Sidebar = ({
                           Logistic Regression
                         </span>
                       </a>
+                    </li> */}
+                    <li className="flex flex-col gap-2">
+                      <Select
+                        onValueChange={setTargetColumn}
+                        value={targetColumn}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select the target column" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Columns</SelectLabel>
+                            {columnsList.map((column) => (
+                              <SelectItem key={column} value={column}>
+                                {column}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <MultiSelect
+                        options={columnsList.map((column) => ({
+                          value: column,
+                          label: column,
+                        }))}
+                        onValueChange={setSelectedColumns}
+                        defaultValue={selectedColumns}
+                        placeholder="Select columns"
+                        variant="inverted"
+                        animation={2}
+                        maxCount={3}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Number of epochs"
+                        value={epochs}
+                        onChange={(e) => setEpochs(Number(e.target.value))}
+                      />
+                      <Input
+                        type="string"
+                        placeholder="Hidden layers (comma separated)"
+                        value={hiddenLayers}
+                        onChange={(e) => setHiddenLayers(e.target.value)}
+                      />
+                      <Button onClick={handleTrain} className="mt-4">
+                        Start Training
+                      </Button>
                     </li>
                   </ul>
                 </AccordionContent>
