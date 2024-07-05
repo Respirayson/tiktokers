@@ -6,15 +6,15 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
-import { Binary, Package, Settings, Wrench } from 'lucide-react'
+import { Binary, Moon, Package, Settings, Sun, Wrench } from 'lucide-react'
 import ProblemsNavBody from './ProblemsNavBody'
 import ModelsNavBody from './ModelsNavBody'
 
 const SidebarBody = () => {
     // Handle side nav bar button changes
-    const [ selectedNavButton, setSelectedNavButton ] = useState('problems') // Possible states: problems, models, operations, settings
-    const [ selectedProblem, setSelectedProblem ] = useState('');
-    const [ selectedModel, setSelectedModel ] = useState('');
+    const [selectedNavButton, setSelectedNavButton] = useState('problems') // Possible states: problems, models, operations, settings
+    const [selectedProblem, setSelectedProblem] = useState('');
+    const [selectedModel, setSelectedModel] = useState('');
 
     // Helper functions
     const handleNavButtonClick = (buttonName: string) => {
@@ -108,13 +108,13 @@ const SidebarBody = () => {
             {/* Body for selected side nav bar button */}
             <div className='flex flex-1'>
                 {selectedNavButton == "problems" && (
-                    <ProblemsNavBody problem={selectedProblem} handleSelectProblem={handleSelectProblem}/>
+                    <ProblemsNavBody problem={selectedProblem} handleSelectProblem={handleSelectProblem} />
                 )}
                 {/* {selectedNavButton == "operations" && (
                     <OperationsNavBody/>
                 )} */}
                 {selectedNavButton == "models" && (
-                    <ModelsNavBody model={selectedModel} handleSelectModel={handleSelectModel}/>
+                    <ModelsNavBody model={selectedModel} handleSelectModel={handleSelectModel} />
                 )}
                 {/* {selectedNavButton == "settings" && (
                     <SettingsNavBody/>

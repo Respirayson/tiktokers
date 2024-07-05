@@ -144,13 +144,52 @@ function AppRefactor() {
             <ResizablePanelGroup direction="horizontal">
                 <ResizablePanel defaultSize={25} maxSize={25} minSize={20}>
                     <div className="flex h-full items-center justify-center">
-                        <Sidebar/>
+                        <Sidebar />
                     </div>
                 </ResizablePanel>
                 <ResizableHandle />
                 <ResizablePanel>
-                    <div className="flex h-full items-center justify-center">
+                    <div className="flex flex-col h-full w-full items-center justify-center">
+                        <Navbar
+                            selectedButton={selectedButton}
+                            setSelectedButton={setSelectedButton}
+                        />
+                        <div className="fixed top-4 right-16">
+                            <ModeToggle />
+                        </div>
 
+                        {/* Main body */}
+                        {/* Data Tab */}
+                        {selectedButton === "Data" && (
+                            <div className="flex flex-row justify-center items-center w-full h-screen">
+                                <Dropzone
+                                    fileName={displayName}
+                                    handleOnDrop={csvUpload}
+                                    isLoading={isLoading}
+                                />
+                            </div>
+                        )}
+
+                        {selectedButton === "Analytics" && (
+                            <div className="py-16 flex flex-grow flex-col w-full h-full items-center overflow-y-auto">
+                                <div className="w-[65vw]">
+                                    <DataTable
+                                        columns={DataColumns(headers)}
+                                        data={dataBody}
+                                        filename={displayName}
+                                    />
+                                </div>
+
+                                <div className="w-[65vw]">
+                                    {/* Analytics Table */}
+                                    <AnalyticsTable
+                                        columns={analyticsColumns}
+                                        data={statistics}
+                                        statisticTitles={statisticsTitles}
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </ResizablePanel>
             </ResizablePanelGroup>
