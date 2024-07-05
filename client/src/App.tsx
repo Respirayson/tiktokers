@@ -28,6 +28,8 @@ function App() {
   const [fileName, setFileName] = useState<string>("");
   const [displayName, setDisplayName] = useState<string>("");
   const [problem, setProblem] = useState<string>("");
+  const [dropout, setDropout] = useState<number>(0);
+  const [batchNorm, setBatchNorm] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [statistics, setStatistics] = useState<Array<StatisticData<object>>>(
     []
@@ -150,6 +152,10 @@ function App() {
         setSelectedButton={setSelectedButton}
         problem={problem}
         setProblem={setProblem}
+        dropout={dropout}
+        setDropout={setDropout}
+        batchNorm={batchNorm}
+        setBatchNorm={setBatchNorm}
       />
       <Navbar
         selectedButton={selectedButton}
