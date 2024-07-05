@@ -68,6 +68,7 @@ const Sidebar = ({
   );
   const [data, setData] = useState<object[]>([]);
   const [open, setOpen] = useState(false);
+  const [problem, setProblem] = useState<string>("")
   const isSingleOperation = [
     "exploration/oversample",
     "exploration/smote",
@@ -76,8 +77,20 @@ const Sidebar = ({
 
   const handleTrain = async () => {
     try {
+      let api_url = ""
+      switch(problem) {
+        case "classification":
+          api_url = "http://localhost:5001/train"
+          break;
+        case "regression":
+          api_url = "http://localhost:5001/train/linreg"
+          break;
+        default:
+          alert("Select ML problem")
+          return
+      }
       setSelectedButton("Results")
-      const response = await axios.post("http://localhost:5001/train", {
+      const response = await axios.post(`${api_url}`, {
         filename: fileName,
         target_column: targetColumn,
         hidden_layers: hiddenLayers.split(",").map((v) => parseInt(v.trim())),
@@ -240,7 +253,9 @@ const Sidebar = ({
                         className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
                       >
                         <span className="ml-3 whitespace-nowrap">
-                          Classification
+                          <button onClick={() => setProblem("classification")}>
+                            Classification
+                          </button>
                         </span>
                       </a>
                     </li>
@@ -250,7 +265,9 @@ const Sidebar = ({
                         className="flex items-start rounded-lg px-3 py-2 text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-700"
                       >
                         <span className="ml-3 whitespace-nowrap">
-                          Regression
+                          <button onClick={() => setProblem("regression")}>
+                            Regression
+                          </button>
                         </span>
                       </a>
                     </li>
