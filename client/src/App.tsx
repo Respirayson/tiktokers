@@ -7,13 +7,13 @@ import Navbar from "./components/floating-navbar";
 import Dropzone from "./components/input-file";
 import axios from "axios";
 import DataColumns from "./components/DataTable/DataColumns";
-import AnalyticsColumns from "./components/AnalyticsTableRefactor/AnalyticsColumns";
+import AnalyticsColumns from "./components/AnalyticsTable/AnalyticsColumns";
 import { DataTable } from "./components/DataTable/DataTable";
 import {
   AnalyticsTable,
   StatisticData,
-} from "./components/AnalyticsTableRefactor/AnalyticsTable";
-import { statisticsTitles } from "./components/AnalyticsTableRefactor/AnalyticsMockData";
+} from "./components/AnalyticsTable/AnalyticsTable";
+import { statisticsTitles } from "./components/AnalyticsTable/AnalyticsMockData";
 import { Separator } from "./components/ui/separator";
 import { v4 as uuidv4 } from "uuid";
 import { ToastContainer, toast } from "react-toastify";
@@ -24,8 +24,8 @@ const socket = io("http://localhost:5001");
 
 function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
+  const [dataBody, setDataBody] = useState<Array<object>>([]);
   const [analyticHeaders, setAnalyticHeaders] = useState<Array<string>>([]);
-  const [body, setBody] = useState<Array<object>>([]);
   const [fileName, setFileName] = useState<string>("");
   const [displayName, setDisplayName] = useState<string>("");
   const [problem, setProblem] = useState<string>("");
@@ -40,40 +40,9 @@ function App() {
   const [currentEpoch, setCurrentEpoch] = useState<number>(0);
   const [currentLoss, setCurrentLoss] = useState<number>(0);
   const [confusionMatrix, setConfusionMatrix] = useState<string | null>(null);
+  const [selectedButton, setSelectedButton] = useState("Data");
 
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to server!");
-    });
-
-    socket.on("training_progress", (data: any) => {
-      console.log("Training Progress:", data);
-      setTrainingProgress((data.epoch / epochs) * 100);
-      setCurrentEpoch(data.epoch);
-      setCurrentLoss(data.loss);
-    });
-
-    socket.on("training_complete", (data: any) => {
-      console.log("Training Complete:", data);
-      toast.success("Training complete!");
-      setConfusionMatrix(data.confusion_matrix);
-    });
-
-    socket.on("training_error", (data: any) => {
-      console.error("Training Error:", data);
-      toast.error("Training error: " + data.message);
-    });
-
-    socket.on("status", (data: any) => {
-      console.log("Status:", data.msg);
-    });
-
-    return () => {
-      socket.off("training_progress");
-      socket.off("training_complete");
-      socket.off("training_error");
-    };
-  }, [epochs]);
+  const analyticsColumns = AnalyticsColumns(analyticHeaders);
 
   const csvUpload = async (files: FileList | null) => {
     if (files) {
@@ -86,7 +55,7 @@ function App() {
               setHeaders(results.meta.fields);
               setAnalyticHeaders(results.meta.fields);
             }
-            setBody(results.data);
+            setDataBody(results.data);
 
             const newFileName = uuidv4() + ".csv";
             console.log(newFileName);
@@ -130,9 +99,39 @@ function App() {
     }
   };
 
-  const [selectedButton, setSelectedButton] = useState("Data");
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Connected to server!");
+    });
 
-  const analyticsColumns = AnalyticsColumns(analyticHeaders);
+    socket.on("training_progress", (data: any) => {
+      console.log("Training Progress:", data);
+      setTrainingProgress((data.epoch / epochs) * 100);
+      setCurrentEpoch(data.epoch);
+      setCurrentLoss(data.loss);
+    });
+
+    socket.on("training_complete", (data: any) => {
+      console.log("Training Complete:", data);
+      toast.success("Training complete!");
+      setConfusionMatrix(data.confusion_matrix);
+    });
+
+    socket.on("training_error", (data: any) => {
+      console.error("Training Error:", data);
+      toast.error("Training error: " + data.message);
+    });
+
+    socket.on("status", (data: any) => {
+      console.log("Status:", data.msg);
+    });
+
+    return () => {
+      socket.off("training_progress");
+      socket.off("training_complete");
+      socket.off("training_error");
+    };
+  }, [epochs]);
 
   return (
     <>
@@ -142,7 +141,7 @@ function App() {
         setHiddenLayers={setHiddenLayers}
         epochs={epochs}
         setEpochs={setEpochs}
-        setBody={setBody}
+        setBody={setDataBody}
         fileName={fileName}
         displayName={displayName}
         selectedButton={selectedButton}
@@ -161,7 +160,8 @@ function App() {
       </div>
 
       {/* body */}
-      <div className="pl-[16rem]">
+      <div className="pl-[16rem] w-full flex flex-col items-center justify-center h-screen">
+        {/* Data Tab */}
         {selectedButton === "Data" && (
           <div className="flex flex-row justify-center items-center w-full h-screen">
             <Dropzone
@@ -172,13 +172,13 @@ function App() {
           </div>
         )}
 
+        {/* Analytics Tab */}
         {selectedButton === "Analytics" && (
-          <div className="flex flex-col pt-20">
-            <div className="w-full flex flex-col items-center justify-center">
+            <div>
               <div className="w-[70vw]">
                 <DataTable
                   columns={DataColumns(headers)}
-                  data={body}
+                  data={dataBody}
                   filename={displayName}
                 />
               </div>
@@ -198,9 +198,9 @@ function App() {
                 className="w-[70vw] mt-10"
               />
             </div>
-          </div>
         )}
 
+        {/* Results Tab */}
         {selectedButton === "Results" && (
           <div className="w-full flex flex-col items-center justify-center h-screen">
             <div className="w-full bg-gray-200 rounded-full h-4">
