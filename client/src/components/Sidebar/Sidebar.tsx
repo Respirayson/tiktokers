@@ -1,13 +1,6 @@
 import React from "react"
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
 import SidebarHeader from "./SidebarHeader"
 import SidebarFooter from "./SidebarFooter"
-import { BrainCogIcon } from "./SidebarIcons";
 import SidebarBody from "./SidebarBody";
 
 const Sidebar = () => {

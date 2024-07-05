@@ -6,6 +6,6 @@ import AppRefactor from './AppRefactor.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
-    <AppRefactor />
+    <App />
   </ThemeProvider>,
 )
