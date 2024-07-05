@@ -81,6 +81,26 @@ class ConfigurableNN(nn.Module):
         x = torch.flatten(x, 1)
         return self.model(x)
 
+class ConfigurableLinRegNN(nn.Module):
+    def __init__(self, input_size, hidden_layers, batch_norm, dropout):
+        super(ConfigurableLinRegNN, self).__init__()
+        layers = []
+        prev_size = input_size
+        for size in hidden_layers:
+            layers.append(nn.Linear(prev_size, size))
+            if batch_norm:
+                layers.append(nn.BatchNorm1d(size))
+            if dropout != 0:
+                layers.append(nn.Dropout(dropout))
+            layers.append(nn.ReLU())
+            prev_size = size
+        layers.append(nn.Linear(prev_size, 1))  # Adjust for single value
+        self.model = nn.Sequential(*layers)
+
+    def forward(self, x):
+        x = torch.flatten(x, 1)
+        return self.model(x)
+
 
 def train_model(file_path, target_column, selected_columns, hidden_layers, epochs, room):
     try:
@@ -138,6 +158,46 @@ def train_model(file_path, target_column, selected_columns, hidden_layers, epoch
         traceback.print_exc()
         socketio.emit('training_error', {'message': str(e)}, room=room)
 
+def train_model_lin_reg(file_path, target_column, selected_columns, hidden_layers, epochs, room):
+    try:
+        df = pd.read_csv(file_path)
+        df = df[selected_columns + [target_column]]
+        df = pd.get_dummies(df)
+
+        X = df.drop(columns=[target_column]).values
+        y = df[target_column].values
+
+        input_size = X.shape[1]
+
+        model = ConfigurableLinRegNN(input_size, hidden_layers, True, 0.2) # Input fields batch_norm and dropout later
+        criterion = nn.MSELoss()  # Use Mean Squared Error for Linear Regression
+        optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        train_loader = DataLoader(TensorDataset(torch.tensor(X_train, dtype=torch.float32), torch.tensor(y_train, dtype=torch.long)), batch_size=64, shuffle=True)
+
+        for epoch in range(epochs):
+            model.train()
+            for inputs, targets in train_loader:
+                optimizer.zero_grad()
+                outputs = model(inputs)
+                loss = criterion(outputs, targets)
+                loss.backward()
+                optimizer.step()
+
+            socketio.emit('training_progress', {'epoch': epoch + 1, 'loss': loss.item()}, room=room)
+
+        model.eval()
+        with torch.no_grad():
+            y_pred = model(torch.tensor(X_test, dtype=torch.float32)).argmax(dim=1).numpy()
+
+        socketio.emit('training_complete', {'message': 'Training complete!'}, room=room)
+
+    except Exception as e:
+        logger.error(f"Training error: {e}")
+        traceback.print_exc()
+        socketio.emit('training_error', {'message': str(e)}, room=room)
 
 class TrainModelHandler(Resource):
     def post(self):
