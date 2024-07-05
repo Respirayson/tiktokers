@@ -66,12 +66,16 @@ UPLOAD_FOLDER = "data"
 
 
 class ConfigurableNN(nn.Module):
-    def __init__(self, input_size, hidden_layers, num_classes):
+    def __init__(self, input_size, hidden_layers, num_classes, batch_norm, dropout):
         super(ConfigurableNN, self).__init__()
         layers = []
         prev_size = input_size
         for size in hidden_layers:
             layers.append(nn.Linear(prev_size, size))
+            if batch_norm:
+                layers.append(nn.BatchNorm1d(size))
+            if dropout != 0:
+                layers.append(nn.Dropout(dropout))
             layers.append(nn.ReLU())
             prev_size = size
         layers.append(nn.Linear(prev_size, num_classes))  # Adjust for multi-class
@@ -102,7 +106,7 @@ class ConfigurableLinRegNN(nn.Module):
         return self.model(x)
 
 
-def train_model(file_path, target_column, selected_columns, hidden_layers, epochs, room):
+def train_model(file_path, target_column, selected_columns, hidden_layers, epochs, batch_norm, dropout, room):
     try:
         df = pd.read_csv(file_path)
         df = df[selected_columns + [target_column]]
@@ -114,7 +118,7 @@ def train_model(file_path, target_column, selected_columns, hidden_layers, epoch
         input_size = X.shape[1]
         num_classes = len(np.unique(y))
 
-        model = ConfigurableNN(input_size, hidden_layers, num_classes)
+        model = ConfigurableNN(input_size, hidden_layers, num_classes, batch_norm, dropout)
         criterion = nn.CrossEntropyLoss()  # Use CrossEntropyLoss for multi-class
         optimizer = optim.Adam(model.parameters(), lr=0.001)
 
@@ -158,7 +162,7 @@ def train_model(file_path, target_column, selected_columns, hidden_layers, epoch
         traceback.print_exc()
         socketio.emit('training_error', {'message': str(e)}, room=room)
 
-def train_model_lin_reg(file_path, target_column, selected_columns, hidden_layers, epochs, room):
+def train_model_lin_reg(file_path, target_column, selected_columns, hidden_layers, epochs, batch_norm, dropout, room):
     try:
         df = pd.read_csv(file_path)
         df = df[selected_columns + [target_column]]
@@ -169,7 +173,7 @@ def train_model_lin_reg(file_path, target_column, selected_columns, hidden_layer
 
         input_size = X.shape[1]
 
-        model = ConfigurableLinRegNN(input_size, hidden_layers, True, 0.2) # Input fields batch_norm and dropout later
+        model = ConfigurableLinRegNN(input_size, hidden_layers, batch_norm, dropout) # Input fields batch_norm and dropout later
         criterion = nn.MSELoss()  # Use Mean Squared Error for Linear Regression
         optimizer = optim.Adam(model.parameters(), lr=0.001)
 
@@ -210,13 +214,15 @@ class TrainModelHandler(Resource):
         selected_columns = data['selected_columns']
         hidden_layers = data['hidden_layers']
         epochs = data['epochs']
+        dropout = data['dropout']
+        batch_norm = data['batchNorm']
 
         file_path = os.path.join("data", filename)
 
         # Join the room based on filename
         room = filename
 
-        thread = threading.Thread(target=train_model, args=(file_path, target_column, selected_columns, hidden_layers, epochs, room))
+        thread = threading.Thread(target=train_model, args=(file_path, target_column, selected_columns, hidden_layers, epochs, batch_norm, dropout, room))
         thread.start()
         return jsonify({"status": "success", "message": "Model training started."})
 
@@ -228,13 +234,14 @@ class TrainLinRegModelHandler(Resource):
         selected_columns = data['selected_columns']
         hidden_layers = data['hidden_layers']
         epochs = data['epochs']
-
+        dropout = data['dropout']
+        batch_norm = data['batchNorm']
         file_path = os.path.join("data", filename)
 
         # Join the room based on filename
         room = filename
 
-        thread = threading.Thread(target=train_model_lin_reg, args=(file_path, target_column, selected_columns, hidden_layers, epochs, room))
+        thread = threading.Thread(target=train_model_lin_reg, args=(file_path, target_column, selected_columns, hidden_layers, epochs, batch_norm, dropout, room))
         thread.start()
         return jsonify({"status": "success", "message": "Model training started."})
 

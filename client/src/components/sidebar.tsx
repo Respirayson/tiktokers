@@ -5,6 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -48,6 +49,10 @@ const Sidebar = ({
   setSelectedButton,
   problem,
   setProblem,
+  dropout,
+  setDropout,
+  batchNorm,
+  setBatchNorm,
 }: {
   fileName: string;
   columnsList: string[];
@@ -62,6 +67,10 @@ const Sidebar = ({
   setSelectedButton: React.Dispatch<React.SetStateAction<string>>;
   problem: string;
   setProblem: React.Dispatch<React.SetStateAction<string>>;
+  dropout: number;
+  setDropout: React.Dispatch<React.SetStateAction<number>>;
+  batchNorm: boolean;
+  setBatchNorm: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
   const [previewColumnsList, setPreviewColumnsList] =
@@ -99,6 +108,8 @@ const Sidebar = ({
         hidden_layers: hiddenLayers.split(",").map((v) => parseInt(v.trim())),
         epochs: epochs,
         selected_columns: selectedColumns,
+        dropout: dropout,
+        batchNorm: batchNorm,
       });
       console.log(response.data);
       toast.info("Training started!");
@@ -516,18 +527,48 @@ const Sidebar = ({
                         animation={2}
                         maxCount={3}
                       />
+                      <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-left mt-1">
+                        Epochs
+                      </label>
                       <Input
                         type="number"
                         placeholder="Number of epochs"
                         value={epochs}
                         onChange={(e) => setEpochs(Number(e.target.value))}
                       />
+                      <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-left mt-1">
+                        Hidden Layers (eg: 128,64)
+                      </label>
                       <Input
                         type="string"
                         placeholder="Hidden layers (comma separated)"
                         value={hiddenLayers}
                         onChange={(e) => setHiddenLayers(e.target.value)}
                       />
+                      <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-left mt-1">
+                        Dropout (0 to 1)
+                      </label>
+                      <Input
+                        type="number"
+                        placeholder="Dropout Rate"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        value={dropout}
+                        onChange={(e) => setDropout(Math.min(Math.max(Number(e.target.value), 0), 1))}
+                      />
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="batch-norm"
+                          checked={batchNorm}
+                          onCheckedChange={() => setBatchNorm(!batchNorm)}
+                        />
+                        <label
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Apply Batch Normalisation
+                        </label>
+                      </div>
                       <Button onClick={handleTrain} className="mt-4">
                         Start Training
                       </Button>
