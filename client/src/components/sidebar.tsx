@@ -46,6 +46,8 @@ const Sidebar = ({
   setHiddenLayers,
   setEpochs,
   setSelectedButton,
+  problem,
+  setProblem,
 }: {
   fileName: string;
   columnsList: string[];
@@ -58,6 +60,8 @@ const Sidebar = ({
   setHiddenLayers: React.Dispatch<React.SetStateAction<string>>;
   setEpochs: React.Dispatch<React.SetStateAction<number>>;
   setSelectedButton: React.Dispatch<React.SetStateAction<string>>;
+  problem: string;
+  setProblem: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
   const [previewColumnsList, setPreviewColumnsList] =
@@ -68,7 +72,6 @@ const Sidebar = ({
   );
   const [data, setData] = useState<object[]>([]);
   const [open, setOpen] = useState(false);
-  const [problem, setProblem] = useState<string>("")
   const isSingleOperation = [
     "exploration/oversample",
     "exploration/smote",

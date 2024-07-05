@@ -27,10 +27,12 @@ function App() {
   const [body, setBody] = useState<Array<object>>([]);
   const [fileName, setFileName] = useState<string>("");
   const [displayName, setDisplayName] = useState<string>("");
+  const [problem, setProblem] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [statistics, setStatistics] = useState<Array<StatisticData<object>>>(
     []
   );
+  const [heatmap, setHeatmap] = useState<string>("");
   const [hiddenLayers, setHiddenLayers] = useState<string>("128,64");
   const [epochs, setEpochs] = useState<number>(10);
   const [trainingProgress, setTrainingProgress] = useState<number>(0);
@@ -71,7 +73,6 @@ function App() {
       socket.off("training_error");
     };
   }, [epochs]);
-  const [heatmap, setHeatmap] = useState<string>("");
 
   const csvUpload = async (files: FileList | null) => {
     if (files) {
@@ -147,6 +148,8 @@ function App() {
         columnsList={headers}
         setColumnsList={setHeaders}
         setSelectedButton={setSelectedButton}
+        problem={problem}
+        setProblem={setProblem}
       />
       <Navbar
         selectedButton={selectedButton}
