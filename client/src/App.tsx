@@ -18,6 +18,7 @@ import { Separator } from "./components/ui/separator";
 import { v4 as uuidv4 } from "uuid";
 import { ToastContainer, toast } from "react-toastify";
 import io from "socket.io-client";
+import 'react-toastify/dist/ReactToastify.css'
 
 const socket = io("http://localhost:5001");
 
@@ -45,25 +46,25 @@ function App() {
       console.log("Connected to server!");
     });
 
-    socket.on("training_progress", (data) => {
+    socket.on("training_progress", (data: any) => {
       console.log("Training Progress:", data);
       setTrainingProgress((data.epoch / epochs) * 100);
       setCurrentEpoch(data.epoch);
       setCurrentLoss(data.loss);
     });
 
-    socket.on("training_complete", (data) => {
+    socket.on("training_complete", (data: any) => {
       console.log("Training Complete:", data);
       toast.success("Training complete!");
       setConfusionMatrix(data.confusion_matrix);
     });
 
-    socket.on("training_error", (data) => {
+    socket.on("training_error", (data: any) => {
       console.error("Training Error:", data);
       toast.error("Training error: " + data.message);
     });
 
-    socket.on("status", (data) => {
+    socket.on("status", (data: any) => {
       console.log("Status:", data.msg);
     });
 
