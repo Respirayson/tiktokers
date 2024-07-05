@@ -6,28 +6,27 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 import React, { useState } from 'react'
 import { Bird, Rabbit, Turtle } from "lucide-react"
 
-
-
-const ProblemsNavBody = ({ problem, handleSelectProblem }: { problem: string; handleSelectProblem: any }) => {
+const ModelsNavBody = ({ model, handleSelectModel }: { model: string; handleSelectModel: any }) => {
     return (
         <div className='container flex flex-1 flex-col w-full h-full py-4 px-0'>
             <div className="flex w-full">
                 <form className="grid w-full items-start gap-6 overflow-auto p-4 pt-0">
                     <fieldset className="grid gap-6 rounded-lg border p-4">
                         <legend className="-ml-1 px-1 text-sm font-medium">
-                            Select Problem
+                            Select Model
                         </legend>
                         <div className="grid gap-3">
-                            <Label htmlFor="model">Problem</Label>
-                            <Select value={problem} onValueChange={handleSelectProblem}>
+                            <Label htmlFor="model">Model</Label>
+                            <Select value={model} onValueChange={handleSelectModel}>
                                 <SelectTrigger
                                     id="model"
                                     className="items-start [&_[data-description]]:hidden"
                                 >
-                                    <SelectValue placeholder="Select a ML problem" />
+                                    <SelectValue placeholder="Select a model" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="classification">
@@ -64,10 +63,25 @@ const ProblemsNavBody = ({ problem, handleSelectProblem }: { problem: string; ha
                             </Select>
                         </div>
                     </fieldset>
+                    <fieldset className="grid gap-6 rounded-lg border p-4">
+                        <legend className="-ml-1 px-1 text-sm font-medium">
+                            Model Parameters
+                        </legend>
+                        <div className="grid gap-3">
+                            <div className="grid gap-3">
+                                <Label htmlFor="temperature">Number of Epochs</Label>
+                                <Input id="temperature" type="number" placeholder="10" />
+                            </div>
+                            <div className="grid gap-3">
+                                <Label htmlFor="top-p">Number of Hidden Layers</Label>
+                                <Input id="top-p" type="number" placeholder="128,64" />
+                            </div>
+                        </div>
+                    </fieldset>
                 </form>
             </div>
         </div>
     )
 }
 
-export default ProblemsNavBody
+export default ModelsNavBody

@@ -8,11 +8,13 @@ import {
 import { Button } from "@/components/ui/button"
 import { Binary, Package, Settings, Wrench } from 'lucide-react'
 import ProblemsNavBody from './ProblemsNavBody'
+import ModelsNavBody from './ModelsNavBody'
 
 const SidebarBody = () => {
     // Handle side nav bar button changes
     const [ selectedNavButton, setSelectedNavButton ] = useState('problems') // Possible states: problems, models, operations, settings
     const [ selectedProblem, setSelectedProblem ] = useState('');
+    const [ selectedModel, setSelectedModel ] = useState('');
 
     // Helper functions
     const handleNavButtonClick = (buttonName: string) => {
@@ -20,8 +22,13 @@ const SidebarBody = () => {
     }
     const navButtonClass = (buttonName: string) => `rounded-lg ${selectedNavButton === buttonName ? 'bg-muted' : ''}`;
 
+    // Body select functions
     const handleSelectProblem = (value: string) => {
         setSelectedProblem(value)
+    }
+
+    const handleSelectModel = (value: string) => {
+        setSelectedModel(value)
     }
 
     return (
@@ -103,13 +110,13 @@ const SidebarBody = () => {
                 {selectedNavButton == "problems" && (
                     <ProblemsNavBody problem={selectedProblem} handleSelectProblem={handleSelectProblem}/>
                 )}
-                {/* {selectedNavButton == "models" && (
-                    <ModelsNavBody/>
-                )}
-                {selectedNavButton == "operations" && (
+                {/* {selectedNavButton == "operations" && (
                     <OperationsNavBody/>
+                )} */}
+                {selectedNavButton == "models" && (
+                    <ModelsNavBody model={selectedModel} handleSelectModel={handleSelectModel}/>
                 )}
-                {selectedNavButton == "settings" && (
+                {/* {selectedNavButton == "settings" && (
                     <SettingsNavBody/>
                 )} */}
             </div>
