@@ -171,7 +171,7 @@ function AppRefactor() {
                         )}
 
                         {selectedButton === "Analytics" && (
-                            <div className="py-16 flex flex-grow flex-col w-full h-full items-center overflow-y-auto">
+                            <div className="py-16 flex flex-grow flex-col w-full h-full items-center overflow-y-auto gap-16">
                                 <div className="w-[65vw]">
                                     <DataTable
                                         columns={DataColumns(headers)}
@@ -179,7 +179,6 @@ function AppRefactor() {
                                         filename={displayName}
                                     />
                                 </div>
-
                                 <div className="w-[65vw]">
                                     {/* Analytics Table */}
                                     <AnalyticsTable
