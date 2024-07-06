@@ -9,6 +9,8 @@ from imblearn.over_sampling import RandomOverSampler, SMOTE
 from sklearn.impute import SimpleImputer
 from werkzeug.utils import secure_filename
 from routes.fileapi import FileHandler
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
 
 load_dotenv()
 
@@ -29,6 +31,60 @@ class UpdateHandler(Resource):
 
         return jsonify({"status": "success", "message": "Data saved successfully."})
 
+class LinearRegressionHandler(Resource):
+    def get(self):
+        return jsonify({"status": "success", "message": "Linear Regression API connected."})
+
+    def post(self):
+        data = request.json
+        filename = data['filename']
+        target_column = data['target_column']
+
+        file_path = os.path.join(UPLOAD_FOLDER, secure_filename(filename))
+        df = pd.read_csv(file_path)
+
+        if target_column not in df.columns:
+            return jsonify({'message': f'Target column {target_column} not found in data.', "status": "unsuccessful"})
+
+        X = df.drop(columns=[target_column])
+        y = df[target_column]
+
+        lr = LinearRegression()
+        lr.fit(X, y)
+
+        predictions = lr.predict(X)
+
+        formatted_data = {
+            'predictions': predictions.tolist(),
+            'coefficients': lr.coef_.tolist(),
+            'intercept': lr.intercept_
+        }
+
+        plt.scatter(X, y, label='Actual values')
+        plt.plot(X, predictions, label='Predicted values')
+        plt.xlabel('Feature values')
+        plt.ylabel('Target values')
+        plt.title('Linear Regression Plot')
+        plt.legend()
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+
+        # Encode the plot as base64
+        plot_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+
+        # Get the intercept and coefficients
+        intercept = lr.intercept_[0]
+        coefficients = lr.coef_[0]
+
+        # Return the results as JSON
+        return jsonify({
+            'plot': plot_base64,
+            'intercept': intercept,
+            'coefficients': coefficients.tolist()
+        })
+    
 class OversampleHandler(Resource):
     def get(self):
         return jsonify({"status": "success", "message": "Oversample Preview API connected."})
