@@ -47,6 +47,7 @@ class FileHandler(Resource):
 
             # Parse CSV and compute statistics
             df = pd.read_csv(file_path)
+            df = df.replace({np.nan: None})  # Replace NaN with None for JSON compatibility
             stats = self.compute_statistics(df)
             heatmap = self.create_heatmap(filename)
             return jsonify({"name": filename, "status": "success", "statistics": stats, "heatmap": heatmap})

@@ -80,6 +80,9 @@ function App() {
                   },
                 }
               );
+              if (typeof response.data === "string") {
+                response.data = JSON.parse(response.data);
+              }
               console.log("File successfully uploaded:", response.data);
               setStatistics(response.data.statistics);
               setHeatmap(response.data.heatmap);
