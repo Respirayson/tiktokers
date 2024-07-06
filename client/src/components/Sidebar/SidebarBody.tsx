@@ -52,7 +52,7 @@ const SidebarBody = ({
     setBatchNorm: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
     // Handle side nav bar button changes
-    const [selectedNavButton, setSelectedNavButton] = useState('problems') // Possible states: problems, models, operations, settings
+    const [selectedNavButton, setSelectedNavButton] = useState('settings') // Possible states: problems, models, operations, settings
     const [selectedModel, setSelectedModel] = useState('');
 
     // Coped from old Sidebar
@@ -149,7 +149,7 @@ const SidebarBody = ({
     };
 
     // Handle Click
-    const handleSaveChanges = async (setOpen: (arg0: boolean) => void) => {
+    const handleSaveChanges = async () => {
         try {
             const response = await axios.post(`${BASE_URL}/update`, {
                 filename: fileName,
@@ -206,8 +206,26 @@ const SidebarBody = ({
                                 <Button
                                     variant="ghost"
                                     size="icon"
+                                    className={navButtonClass('operations')}
+                                    aria-label="Operations"
+                                    disabled={columnsList.length <= 0}
+                                    onClick={() => handleNavButtonClick('operations')}
+                                >
+                                    <Wrench className="size-5" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="right" sideOffset={5}>
+                                Preprocessing Operations
+                            </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
                                     className={navButtonClass('problems')}
                                     aria-label="Problems"
+                                    disabled={columnsList.length <= 0}
                                     onClick={() => handleNavButtonClick('problems')}
                                 >
                                     <Binary className="size-5" />
@@ -224,6 +242,7 @@ const SidebarBody = ({
                                     size="icon"
                                     className={navButtonClass('models')}
                                     aria-label="Models"
+                                    disabled={columnsList.length <= 0 || problem == ""}
                                     onClick={() => handleNavButtonClick('models')}
                                 >
                                     <Package className="size-5" />
@@ -231,23 +250,6 @@ const SidebarBody = ({
                             </TooltipTrigger>
                             <TooltipContent side="right" sideOffset={5}>
                                 Models
-                            </TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className={navButtonClass('operations')}
-                                    aria-label="Operations"
-                                    disabled={selectedButton != "Analytics"}
-                                    onClick={() => handleNavButtonClick('operations')}
-                                >
-                                    <Wrench className="size-5" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="right" sideOffset={5}>
-                                Preprocessing Operations
                             </TooltipContent>
                         </Tooltip>
                         <Tooltip>
@@ -301,6 +303,7 @@ const SidebarBody = ({
                         handleSetDropout={handleSetDropout}
                         batchNorm={batchNorm}
                         handleSetBatchNorm={handleSetBatchNorm}
+                        handleTrain={handleTrain}
                     />
                 )}
                 {/* {selectedNavButton == "settings" && (
