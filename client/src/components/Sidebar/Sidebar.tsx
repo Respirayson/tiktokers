@@ -6,7 +6,6 @@ const Sidebar = ({
     fileName,
     columnsList,
     setColumnsList,
-    selectedButton,
     setBody,
     hiddenLayers,
     epochs,
@@ -23,7 +22,6 @@ const Sidebar = ({
     fileName: string;
     columnsList: string[];
     setColumnsList: React.Dispatch<React.SetStateAction<string[]>>;
-    selectedButton: string;
     setBody: React.Dispatch<React.SetStateAction<object[]>>;
     hiddenLayers: string;
     epochs: number;
@@ -48,7 +46,6 @@ const Sidebar = ({
                     setEpochs={setEpochs}
                     setBody={setBody}
                     fileName={fileName}
-                    selectedButton={selectedButton}
                     columnsList={columnsList}
                     setColumnsList={setColumnsList}
                     setSelectedButton={setSelectedButton}

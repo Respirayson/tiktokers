@@ -161,7 +161,6 @@ function AppRefactor() {
                             setEpochs={setEpochs}
                             setBody={setDataBody}
                             fileName={fileName}
-                            selectedButton={selectedButton}
                             columnsList={headers}
                             setColumnsList={setHeaders}
                             setSelectedButton={setSelectedButton}
