@@ -12,6 +12,7 @@ import ModelsNavBody from './ModelsNavBody'
 import { Operation } from '../operations-box'
 import { toast } from 'react-toastify'
 import axios from 'axios'
+import OperationsNavBody from './OperationsNavBody'
 
 const BASE_URL = "http://localhost:5001";
 
@@ -23,8 +24,8 @@ const SidebarBody = ({
     setSelectedButton,
     setBody,
     hiddenLayers,
-    epochs,
     setHiddenLayers,
+    epochs,
     setEpochs,
     problem,
     setProblem,
@@ -40,8 +41,8 @@ const SidebarBody = ({
     setSelectedButton: React.Dispatch<React.SetStateAction<string>>;
     setBody: React.Dispatch<React.SetStateAction<object[]>>;
     hiddenLayers: string;
-    epochs: number;
     setHiddenLayers: React.Dispatch<React.SetStateAction<string>>;
+    epochs: number;
     setEpochs: React.Dispatch<React.SetStateAction<number>>;
     problem: string;
     setProblem: React.Dispatch<React.SetStateAction<string>>;
@@ -63,7 +64,6 @@ const SidebarBody = ({
         null
     );
     const [data, setData] = useState<object[]>([]);
-    const [open, setOpen] = useState(false);
     const isSingleOperation = [
         "exploration/oversample",
         "exploration/smote",
@@ -115,6 +115,8 @@ const SidebarBody = ({
             filename: fileName,
         };
 
+        console.log(fileName)
+
         if (isSingleOperation.includes(selectedOperation?.value ?? "")) {
             reqBody.target_column = targetColumn;
         } else if (selectedOperation?.value === "exploration/impute") {
@@ -147,7 +149,7 @@ const SidebarBody = ({
     };
 
     // Handle Click
-    const handleClick = async () => {
+    const handleSaveChanges = async (setOpen: (arg0: boolean) => void) => {
         try {
             const response = await axios.post(`${BASE_URL}/update`, {
                 filename: fileName,
@@ -156,7 +158,6 @@ const SidebarBody = ({
             console.log(response.data);
             setBody(data);
             setColumnsList(previewColumnsList);
-            setOpen(false);
             setSelectedColumns([]);
             setTargetColumn("");
             toast.success("Changes saved successfully!");
@@ -274,9 +275,20 @@ const SidebarBody = ({
                 {selectedNavButton == "problems" && (
                     <ProblemsNavBody problem={problem} handleSelectProblem={handleSelectProblem} />
                 )}
-                {/* {selectedNavButton == "operations" && (
-                    <OperationsNavBody/>
-                )} */}
+                {selectedNavButton == "operations" && (
+                    <OperationsNavBody
+                        columnsList={columnsList}
+                        selectedColumns={selectedColumns}
+                        setSelectedColumns={setSelectedColumns}
+                        targetColumn={targetColumn}
+                        setTargetColumn={setTargetColumn}
+                        selectedOperation={selectedOperation}
+                        setSelectedOperation={setSelectedOperation}
+                        previewColumnsList={previewColumnsList}
+                        previewData={data}
+                        handlePreviewClick={handlePreviewClick}
+                        handleSaveChanges={handleSaveChanges} />
+                )}
                 {selectedNavButton == "models" && (
                     <ModelsNavBody
                         model={selectedModel}

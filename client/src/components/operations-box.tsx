@@ -19,6 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { CommandSeparator } from "cmdk";
+import { Wrench } from "lucide-react";
 
 export type Operation = {
   value: string;
@@ -79,15 +80,16 @@ export function OperationsBoxResponsive({
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="w-full justify-start">
+          <Button variant="outline" className="w-full gap-3 justify-start">
+            <Wrench className="size-4"/>
             {selectedOperation ? (
-              <>{selectedOperation.label}</>
+              <div className="font-medium">{selectedOperation.label}</div>
             ) : (
               <>Search for an Operation</>
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[230px] p-0" align="start">
+        <PopoverContent className="p-0" align="start">
           <StatusList
             setOpen={setOpen}
             setSelectedOperation={setSelectedOperation}

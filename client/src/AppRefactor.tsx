@@ -66,6 +66,7 @@ function AppRefactor() {
 
                         const newFileName = uuidv4() + ".csv";
                         console.log(newFileName);
+                        setFileName(newFileName);
                         setDisplayName(file.name);
 
                         const formData = new FormData();
