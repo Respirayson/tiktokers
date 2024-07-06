@@ -84,7 +84,6 @@ function AppRefactor() {
                             console.log("File successfully uploaded:", response.data);
                             setStatistics(response.data.statistics);
                             setHeatmap(response.data.heatmap);
-                            setSelectedButton("Analytics");
                             setIsLoading(false);
                             toast.success("File uploaded successfully!");
                             socket.emit("join", { room: newFileName });
