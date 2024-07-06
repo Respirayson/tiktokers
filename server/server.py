@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, send_file, jsonify
 from flask_restful import reqparse, abort, Api, Resource
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit, join_room
+from werkzeug.utils import secure_filename
 
 from dotenv import load_dotenv
 import os
@@ -21,6 +22,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
+import uuid
 
 
 from routes.fileapi import FileHandler
@@ -154,8 +156,11 @@ def train_model(file_path, target_column, selected_columns, hidden_layers, epoch
         buffer.seek(0)
         confusion_matrix_image = base64.b64encode(buffer.getvalue()).decode('utf-8')
         plt.close()
+        
+        filename = secure_filename(uuid.uuid4().hex)
+        torch.save(model.state_dict(), f'models/{filename}.pth')
 
-        socketio.emit('training_complete', {'message': 'Training complete!', 'confusion_matrix': confusion_matrix_image}, room=room)
+        socketio.emit('training_complete', {'message': 'Training complete!', 'confusion_matrix': confusion_matrix_image, 'filename': f'{filename}.pth'}, room=room)
 
     except Exception as e:
         logger.error(f"Training error: {e}")
@@ -198,8 +203,11 @@ def train_model_lin_reg(file_path, target_column, selected_columns, hidden_layer
         model.eval()
         with torch.no_grad():
             y_pred = model(torch.tensor(X_test, dtype=torch.float32)).numpy()
+            
+        filename = secure_filename(uuid.uuid4().hex)
+        torch.save(model.state_dict(), f'models/{filename}.pth')
 
-        socketio.emit('training_complete', {'message': 'Training complete!'}, room=room)
+        socketio.emit('training_complete', {'message': 'Training complete!', 'filename': f'{filename}.pth'}, room=room)
 
     except Exception as e:
         logger.error(f"Training error: {e}")
@@ -244,7 +252,18 @@ class TrainLinRegModelHandler(Resource):
         thread = threading.Thread(target=train_model_lin_reg, args=(file_path, target_column, selected_columns, hidden_layers, epochs, batch_norm, dropout, room))
         thread.start()
         return jsonify({"status": "success", "message": "Model training started."})
-
+    
+class ExportModel(Resource):
+    def post(self):
+        try:
+            data = request.json
+            filename = data['filename']
+            file_path = os.path.join('models', filename)
+            return send_file(file_path, as_attachment=True)
+        except Exception as e:
+            return jsonify(
+                {"message": f"Exception Occured: {e}", "status": "unsuccessful"}
+            )
 
 def start_app():
     try:
@@ -282,6 +301,7 @@ def start_app():
         api.add_resource(UpdateHandler, "/update")
         api.add_resource(TrainModelHandler, "/train")
         api.add_resource(TrainLinRegModelHandler, "/train/linreg")
+        api.add_resource(ExportModel, "/export")
 
         api.add_resource(OversampleHandler, "/exploration/oversample")
         api.add_resource(SmoteHandler, "/exploration/smote")
