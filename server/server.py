@@ -282,20 +282,20 @@ def start_app():
         api = Api(app)
         socketio.init_app(app, cors_allowed_origins="*")
 
-        conn = psycopg2.connect(
-            host=os.getenv("DB_HOST"),
-            dbname=os.getenv("DATABASE"),
-            user=os.getenv("DB_USERNAME"),
-            password=os.getenv("DB_PASSWORD"),
-            port=os.getenv("DB_PORT"),
-        )
+        # conn = psycopg2.connect(
+        #     host=os.getenv("DB_HOST"),
+        #     dbname=os.getenv("DATABASE"),
+        #     user=os.getenv("DB_USERNAME"),
+        #     password=os.getenv("DB_PASSWORD"),
+        #     port=os.getenv("DB_PORT"),
+        # )
 
-        # Test the db connection
-        cur = conn.cursor()
-        cur.execute("SELECT 1;")
-        logger.info("Testing the database connection " + str(cur.fetchall()))
-        cur.close()
-        conn.close()
+        # # Test the db connection
+        # cur = conn.cursor()
+        # cur.execute("SELECT 1;")
+        # logger.info("Testing the database connection " + str(cur.fetchall()))
+        # cur.close()
+        # conn.close()
 
         api.add_resource(FileHandler, "/upload")
         api.add_resource(UpdateHandler, "/update")

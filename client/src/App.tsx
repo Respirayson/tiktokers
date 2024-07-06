@@ -168,7 +168,7 @@ function App() {
       </div>
 
       {/* body */}
-      <div className="pl-[16rem] w-full flex flex-col items-center justify-center h-screen">
+      <div className="pl-[16rem] w-full flex flex-col items-center h-screen">
         {/* Data Tab */}
         {selectedButton === "Data" && (
           <div className="flex flex-row justify-center items-center w-full h-screen">
@@ -183,7 +183,10 @@ function App() {
         {/* Analytics Tab */}
         {selectedButton === "Analytics" && (
           <div>
-            <div className="w-[70vw]">
+            <div className="pt-16 w-[70vw]">
+              <div className="flex m-2 text-3xl font-semibold">
+                {displayName ? displayName : "Data Table"}
+              </div>
               <DataTable
                 columns={DataColumns(headers)}
                 data={dataBody}
