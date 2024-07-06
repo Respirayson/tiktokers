@@ -10,7 +10,6 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Bird, Rabbit } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { MultiSelect } from "../multi-select"
 
