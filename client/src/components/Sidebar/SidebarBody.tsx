@@ -20,7 +20,6 @@ const SidebarBody = ({
     fileName,
     columnsList,
     setColumnsList,
-    selectedButton,
     setSelectedButton,
     setBody,
     hiddenLayers,
@@ -37,7 +36,6 @@ const SidebarBody = ({
     fileName: string;
     columnsList: string[];
     setColumnsList: React.Dispatch<React.SetStateAction<string[]>>;
-    selectedButton: string;
     setSelectedButton: React.Dispatch<React.SetStateAction<string>>;
     setBody: React.Dispatch<React.SetStateAction<object[]>>;
     hiddenLayers: string;
