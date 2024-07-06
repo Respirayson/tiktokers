@@ -9,7 +9,7 @@ import App from './App.tsx'
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
     <Provider store={store}>
-      <App />
+      <AppRefactor />
     </Provider>
   </ThemeProvider>,
 )

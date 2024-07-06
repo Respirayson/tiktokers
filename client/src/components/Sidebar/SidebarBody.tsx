@@ -272,7 +272,7 @@ const SidebarBody = ({
             </div>
 
             {/* Body for selected side nav bar button */}
-            <div className='flex flex-1'>
+            <div className='flex flex-1 overflow-y-auto'>
                 {selectedNavButton == "problems" && (
                     <ProblemsNavBody problem={problem} handleSelectProblem={handleSelectProblem} />
                 )}
