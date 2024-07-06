@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, ChangeEvent } from "react";
 import Papa, { ParseResult } from "papaparse";
 import "./AppRefactor.css";
 import {
@@ -24,6 +24,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ToastContainer, toast } from "react-toastify";
 import io from "socket.io-client";
 import 'react-toastify/dist/ReactToastify.css'
+import { Button } from "./components/ui/button";
 
 const socket = io("http://localhost:5001");
 
@@ -104,6 +105,15 @@ function AppRefactor() {
         }
     };
 
+    // CSV Upload Previews
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const handleUploadNewDataPreview = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    }
+
+    // Epochs UseEffect
     useEffect(() => {
         socket.on("connect", () => {
             console.log("Connected to server!");
@@ -161,24 +171,51 @@ function AppRefactor() {
                         {/* Main body */}
                         {/* Data Tab */}
                         {selectedButton === "Data" && (
-                            <div className="flex flex-row justify-center items-center w-full h-screen">
-                                <Dropzone
-                                    fileName={displayName}
-                                    handleOnDrop={csvUpload}
-                                    isLoading={isLoading}
+                            <>
+                                {
+                                    dataBody.length <= 0 ? (
+                                        <div className="flex flex-row justify-center items-center w-full h-screen">
+                                            <Dropzone
+                                                fileName={displayName}
+                                                handleOnDrop={csvUpload}
+                                                isLoading={isLoading}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="py-16 flex flex-grow flex-col w-full h-full items-center overflow-y-auto gap-16">
+                                            <div className="w-[65vw]">
+                                                <div className="flex m-2 text-3xl font-semibold">
+                                                    {displayName ? displayName : "Data Table"}
+                                                    <Button
+                                                        variant="outline"
+                                                        className="ml-auto text-center font-normal"
+                                                        onClick={handleUploadNewDataPreview}
+                                                    >
+                                                        Upload new data
+                                                    </Button>
+                                                </div>
+                                                <DataTable
+                                                    columns={DataColumns(headers)}
+                                                    data={dataBody}
+                                                    filename={displayName}
+                                                />
+                                            </div>
+                                        </div>
+                                    )
+                                }
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => 
+                                        csvUpload(e.target.files)
+                                    }
                                 />
-                            </div>
+                            </>
                         )}
 
                         {selectedButton === "Analytics" && (
                             <div className="py-16 flex flex-grow flex-col w-full h-full items-center overflow-y-auto gap-16">
-                                <div className="w-[65vw]">
-                                    <DataTable
-                                        columns={DataColumns(headers)}
-                                        data={dataBody}
-                                        filename={displayName}
-                                    />
-                                </div>
                                 <div className="w-[65vw]">
                                     {/* Analytics Table */}
                                     <AnalyticsTable

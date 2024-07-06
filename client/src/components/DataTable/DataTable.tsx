@@ -63,10 +63,6 @@ export function DataTable<TData, TValue>({
 
     return (
         <>
-            {/* Filename */}
-            <div className="flex m-2 text-3xl font-semibold">
-                {filename ? filename : "Data Table"}
-            </div>
             {/* Top elements */}
             <div className="flex justify-between items-center py-4">
                 {/* View filter */}
