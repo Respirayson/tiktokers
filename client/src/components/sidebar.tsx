@@ -41,7 +41,6 @@ const Sidebar = ({
   setColumnsList,
   selectedButton,
   setBody,
-  displayName,
   hiddenLayers,
   epochs,
   setHiddenLayers,
@@ -59,7 +58,6 @@ const Sidebar = ({
   setColumnsList: React.Dispatch<React.SetStateAction<string[]>>;
   selectedButton: string;
   setBody: React.Dispatch<React.SetStateAction<object[]>>;
-  displayName: string;
   hiddenLayers: string;
   epochs: number;
   setHiddenLayers: React.Dispatch<React.SetStateAction<string>>;
@@ -428,7 +426,6 @@ const Sidebar = ({
                                 <DataTable
                                   data={data}
                                   columns={DataColumns(previewColumnsList)}
-                                  filename={displayName}
                                 />
                                 <DialogFooter>
                                   <Button onClick={handleClick}>

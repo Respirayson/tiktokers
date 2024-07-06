@@ -37,13 +37,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
-    filename: string
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
-    filename,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -63,10 +61,6 @@ export function DataTable<TData, TValue>({
 
     return (
         <>
-            {/* Filename */}
-            <div className="flex m-2 text-3xl font-semibold">
-                {filename ? filename : "Data Table"}
-            </div>
             {/* Top elements */}
             <div className="flex justify-between items-center py-4">
                 {/* View filter */}
