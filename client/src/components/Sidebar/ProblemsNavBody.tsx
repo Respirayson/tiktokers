@@ -6,8 +6,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import React, { useState } from 'react'
-import { Bird, Rabbit, Turtle } from "lucide-react"
+import { Bird, Rabbit } from "lucide-react"
 
 
 

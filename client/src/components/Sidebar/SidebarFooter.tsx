@@ -1,5 +1,3 @@
-import React from 'react'
-
 const SidebarFooter = () => {
     return (
         <div className="mt-auto flex">

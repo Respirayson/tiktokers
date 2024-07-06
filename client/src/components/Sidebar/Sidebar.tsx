@@ -1,4 +1,3 @@
-import React from "react"
 import SidebarHeader from "./SidebarHeader"
 import SidebarFooter from "./SidebarFooter"
 import SidebarBody from "./SidebarBody";

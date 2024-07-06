@@ -43,8 +43,8 @@ export function AnalyticsTable<TData, TValue>({
             <div className="flex m-2 pb-2 text-3xl font-semibold">
                 <span>Analytics Table</span>
             </div>
-            <div className="flex flex-col rounded-md border">
-                <div className="flex-1 flex-grow flex-col overflow-auto">
+            <div className="flex flex-col min-h-[25vw] rounded-md border">
+                <div className="flex flex-grow flex-col justify-center overflow-auto">
                     {data.length > 0 ? (
                         <Table>
                             <TableHeader>
@@ -102,7 +102,7 @@ export function AnalyticsTable<TData, TValue>({
                             </TableBody>
                         </Table>
                     ) : (
-                        <div className="flex h-full justify-center items-center text-sm">
+                        <div className="flex h-full w-full justify-center items-center text-sm">
                             No data uploaded.
                         </div>
                     )}

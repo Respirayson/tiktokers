@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
     Tooltip,
     TooltipContent,
@@ -6,7 +6,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
-import { Binary, Moon, Package, Settings, Sun, Wrench } from 'lucide-react'
+import { Binary, Package, Settings, Wrench } from 'lucide-react'
 import ProblemsNavBody from './ProblemsNavBody'
 import ModelsNavBody from './ModelsNavBody'
 

@@ -19,7 +19,6 @@ import {
     StatisticData,
 } from "./components/AnalyticsTable/AnalyticsTable";
 import { statisticsTitles } from "./components/AnalyticsTable/AnalyticsMockData";
-import { Separator } from "./components/ui/separator";
 import { v4 as uuidv4 } from "uuid";
 import { ToastContainer, toast } from "react-toastify";
 import io from "socket.io-client";
@@ -32,16 +31,15 @@ function AppRefactor() {
     const [headers, setHeaders] = useState<Array<string>>([]);
     const [dataBody, setDataBody] = useState<Array<object>>([]);
     const [analyticHeaders, setAnalyticHeaders] = useState<Array<string>>([]);
-    const [fileName, setFileName] = useState<string>("");
     const [displayName, setDisplayName] = useState<string>("");
-    const [problem, setProblem] = useState<string>("");
+    // const [problem, setProblem] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [statistics, setStatistics] = useState<Array<StatisticData<object>>>(
         []
     );
     const [heatmap, setHeatmap] = useState<string>("");
-    const [hiddenLayers, setHiddenLayers] = useState<string>("128,64");
-    const [epochs, setEpochs] = useState<number>(10);
+    // const [hiddenLayers, setHiddenLayers] = useState<string>("128,64");
+    const [epochs] = useState<number>(10);
     const [trainingProgress, setTrainingProgress] = useState<number>(0);
     const [currentEpoch, setCurrentEpoch] = useState<number>(0);
     const [currentLoss, setCurrentLoss] = useState<number>(0);
@@ -65,7 +63,6 @@ function AppRefactor() {
 
                         const newFileName = uuidv4() + ".csv";
                         console.log(newFileName);
-                        setFileName(newFileName);
                         setDisplayName(file.name);
 
                         const formData = new FormData();
@@ -197,7 +194,6 @@ function AppRefactor() {
                                                 <DataTable
                                                     columns={DataColumns(headers)}
                                                     data={dataBody}
-                                                    filename={displayName}
                                                 />
                                             </div>
                                         </div>
@@ -214,6 +210,7 @@ function AppRefactor() {
                             </>
                         )}
 
+                        {/* Analytics Tab */}
                         {selectedButton === "Analytics" && (
                             <div className="py-16 flex flex-grow flex-col w-full h-full items-center overflow-y-auto gap-16">
                                 <div className="w-[65vw]">
@@ -231,10 +228,34 @@ function AppRefactor() {
                                 </div>
                             </div>
                         )}
+
+                        {/* Results Tab */}
+                        {/* Results Tab */}
+                        {selectedButton === "Results" && (
+                            <div className="w-full flex flex-col items-center justify-center h-screen">
+                                <div className="w-full bg-gray-200 rounded-full h-4">
+                                    <div
+                                        className="bg-blue-500 h-4 rounded-full"
+                                        style={{ width: `${trainingProgress}%` }}
+                                    ></div>
+                                </div>
+                                <div className="text-center mt-2">
+                                    Epoch: {currentEpoch} - Loss: {currentLoss.toFixed(4)}
+                                </div>
+                                {confusionMatrix && (
+                                    <div className="w-full mt-4">
+                                        <img
+                                            src={`data:image/png;base64,${confusionMatrix}`}
+                                            alt="Confusion Matrix"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </ResizablePanel>
             </ResizablePanelGroup>
-        </div>
+        </div >
     );
 }
 

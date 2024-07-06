@@ -35,7 +35,7 @@ function App() {
   const [statistics, setStatistics] = useState<Array<StatisticData<object>>>(
     []
   );
-  const [heatmap, setHeatmap] = useState<string>("");
+  const [heatmap, setHeatmap] = useState<string>('');
   const [hiddenLayers, setHiddenLayers] = useState<string>("128,64");
   const [epochs, setEpochs] = useState<number>(10);
   const [trainingProgress, setTrainingProgress] = useState<number>(0);
@@ -145,7 +145,6 @@ function App() {
         setEpochs={setEpochs}
         setBody={setDataBody}
         fileName={fileName}
-        displayName={displayName}
         selectedButton={selectedButton}
         columnsList={headers}
         setColumnsList={setHeaders}
@@ -180,30 +179,31 @@ function App() {
 
         {/* Analytics Tab */}
         {selectedButton === "Analytics" && (
-            <div>
-              <div className="w-[70vw]">
-                <DataTable
-                  columns={DataColumns(headers)}
-                  data={dataBody}
-                  filename={displayName}
-                />
-              </div>
-              <Separator className="my-4" />
-              <div className="w-[70vw]">
-                {/* Analytics Table */}
-                <AnalyticsTable
-                  columns={analyticsColumns}
-                  data={statistics}
-                  statisticTitles={statisticsTitles}
-                />
-              </div>
+          <div>
+            <div className="w-[70vw]">
+              <DataTable
+                columns={DataColumns(headers)}
+                data={dataBody}
+              />
+            </div>
+            <Separator className="my-4" />
+            <div className="w-[70vw]">
+              {/* Analytics Table */}
+              <AnalyticsTable
+                columns={analyticsColumns}
+                data={statistics}
+                statisticTitles={statisticsTitles}
+              />
+            </div>
 
+            {heatmap.length > 0 && (
               <img
                 src={`data:image/png;base64,${heatmap}`}
                 alt={`Heatmap of all variables`}
                 className="w-[70vw] mt-10"
               />
-            </div>
+            )}
+          </div>
         )}
 
         {/* Results Tab */}
