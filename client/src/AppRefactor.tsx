@@ -31,15 +31,18 @@ function AppRefactor() {
     const [headers, setHeaders] = useState<Array<string>>([]);
     const [dataBody, setDataBody] = useState<Array<object>>([]);
     const [analyticHeaders, setAnalyticHeaders] = useState<Array<string>>([]);
+    const [fileName, setFileName] = useState<string>("");
     const [displayName, setDisplayName] = useState<string>("");
-    // const [problem, setProblem] = useState<string>("");
+    const [problem, setProblem] = useState<string>("");
+    const [dropout, setDropout] = useState<number>(0);
+    const [batchNorm, setBatchNorm] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [statistics, setStatistics] = useState<Array<StatisticData<object>>>(
         []
     );
-    const [heatmap, setHeatmap] = useState<string>("");
-    // const [hiddenLayers, setHiddenLayers] = useState<string>("128,64");
-    const [epochs] = useState<number>(10);
+    const [heatmap, setHeatmap] = useState<string>('');
+    const [hiddenLayers, setHiddenLayers] = useState<string>("128,64");
+    const [epochs, setEpochs] = useState<number>(10);
     const [trainingProgress, setTrainingProgress] = useState<number>(0);
     const [currentEpoch, setCurrentEpoch] = useState<number>(0);
     const [currentLoss, setCurrentLoss] = useState<number>(0);
@@ -150,7 +153,24 @@ function AppRefactor() {
             <ResizablePanelGroup direction="horizontal">
                 <ResizablePanel defaultSize={25} maxSize={25} minSize={20}>
                     <div className="flex h-full items-center justify-center">
-                        <Sidebar />
+                        <Sidebar
+                            hiddenLayers={hiddenLayers}
+                            setHiddenLayers={setHiddenLayers}
+                            epochs={epochs}
+                            setEpochs={setEpochs}
+                            setBody={setDataBody}
+                            fileName={fileName}
+                            selectedButton={selectedButton}
+                            columnsList={headers}
+                            setColumnsList={setHeaders}
+                            setSelectedButton={setSelectedButton}
+                            problem={problem}
+                            setProblem={setProblem}
+                            dropout={dropout}
+                            setDropout={setDropout}
+                            batchNorm={batchNorm}
+                            setBatchNorm={setBatchNorm}
+                        />
                     </div>
                 </ResizablePanel>
                 <ResizableHandle />
