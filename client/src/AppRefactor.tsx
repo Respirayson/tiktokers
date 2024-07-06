@@ -207,7 +207,7 @@ function AppRefactor() {
                                     type="file"
                                     ref={fileInputRef}
                                     className="hidden"
-                                    onChange={(e: ChangeEvent<HTMLInputElement>) => 
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
                                         csvUpload(e.target.files)
                                     }
                                 />
@@ -222,6 +222,11 @@ function AppRefactor() {
                                         columns={analyticsColumns}
                                         data={statistics}
                                         statisticTitles={statisticsTitles}
+                                    />
+                                    <img
+                                        src={`data:image/png;base64,${heatmap}`}
+                                        alt={`Heatmap of all variables`}
+                                        className="w-[70vw] mt-10"
                                     />
                                 </div>
                             </div>
