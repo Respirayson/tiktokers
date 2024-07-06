@@ -38,7 +38,7 @@ const Sidebar = ({
     return (
         <div id="sidebar" className="w-full h-full flex flex-col justify-between" aria-label="Sidebar">
             <div className="p-4"><SidebarHeader /></div>
-            <div className="flex h-full border-y-2">
+            <div className="flex flex-1 h-screen border-y-2 overflow-hidden">
                 <SidebarBody
                     hiddenLayers={hiddenLayers}
                     setHiddenLayers={setHiddenLayers}
