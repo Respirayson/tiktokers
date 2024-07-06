@@ -48,6 +48,7 @@ function AppRefactor() {
     const [currentLoss, setCurrentLoss] = useState<number>(0);
     const [confusionMatrix, setConfusionMatrix] = useState<string | null>(null);
     const [selectedButton, setSelectedButton] = useState("Data");
+    const [trainedModelFilename, setTrainedModelFilename] = useState("");
 
     const analyticsColumns = AnalyticsColumns(analyticHeaders);
 
@@ -129,6 +130,7 @@ function AppRefactor() {
         socket.on("training_complete", (data: any) => {
             console.log("Training Complete:", data);
             toast.success("Training complete!");
+            setTrainedModelFilename(data.filename)
             setConfusionMatrix(data.confusion_matrix);
         });
 
@@ -147,6 +149,31 @@ function AppRefactor() {
             socket.off("training_error");
         };
     }, [epochs]);
+
+    // Handle Export Model
+    const handleExportTrainingModel = async () => {
+        try {
+            const response = await axios.post(
+                "http://localhost:5001/export",
+                {
+                    filename: trainedModelFilename,
+                },
+                { responseType: 'blob'}
+            );
+            const url = window.URL.createObjectURL(new Blob([response.data]))
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', trainedModelFilename);
+            document.body.appendChild(link)
+            link.click()
+            link.parentNode?.removeChild(link);
+            console.log("Downloading trained model");
+            toast.success("Model uploaded successfully!");
+        } catch (error) {
+            toast.error("Error downloading model!");
+            console.error("Error downloading model:", error);
+        }
+    }
 
     return (
         <div className="flex w-screen h-screen border">
@@ -249,26 +276,40 @@ function AppRefactor() {
                         )}
 
                         {/* Results Tab */}
-                        {/* Results Tab */}
                         {selectedButton === "Results" && (
-                            <div className="w-full flex flex-col items-center justify-center h-screen">
-                                <div className="w-full bg-gray-200 rounded-full h-4">
-                                    <div
-                                        className="bg-blue-500 h-4 rounded-full"
-                                        style={{ width: `${trainingProgress}%` }}
-                                    ></div>
-                                </div>
-                                <div className="text-center mt-2">
-                                    Epoch: {currentEpoch} - Loss: {currentLoss.toFixed(4)}
-                                </div>
-                                {confusionMatrix && (
-                                    <div className="w-full mt-4">
-                                        <img
-                                            src={`data:image/png;base64,${confusionMatrix}`}
-                                            alt="Confusion Matrix"
-                                        />
+                            <div className="py-16 flex flex-grow flex-col w-full h-full items-center overflow-y-auto gap-16">
+                                <div className="w-[65vw] h-full">
+                                    <div className="flex m-2 text-3xl font-semibold">
+                                        <span>Training Results</span>
+                                        <Button
+                                            variant="default"
+                                            className="ml-auto text-center font-semibold"
+                                            disabled={currentEpoch < epochs}
+                                            onClick={handleExportTrainingModel}
+                                        >
+                                            Export model
+                                        </Button>
                                     </div>
-                                )}
+                                    <div className="container flex flex-col justify-center w-full h-full">
+                                        <div className="w-full bg-gray-200 rounded-full h-2">
+                                            <div
+                                                className="bg-gray-950 h-2 rounded-full"
+                                                style={{ width: `${trainingProgress}%` }}
+                                            ></div>
+                                        </div>
+                                        <div className="text-center mt-2">
+                                            Epoch: {currentEpoch} - Loss: {currentLoss.toFixed(4)}
+                                        </div>
+                                        {confusionMatrix && (
+                                            <div className="w-full mt-4">
+                                                <img
+                                                    src={`data:image/png;base64,${confusionMatrix}`}
+                                                    alt="Confusion Matrix"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>
