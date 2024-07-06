@@ -51,7 +51,6 @@ const SidebarBody = ({
 }) => {
     // Handle side nav bar button changes
     const [selectedNavButton, setSelectedNavButton] = useState('settings') // Possible states: problems, models, operations, settings
-    const [selectedModel, setSelectedModel] = useState('');
 
     // Coped from old Sidebar
     const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
@@ -98,6 +97,8 @@ const SidebarBody = ({
         } catch (error) {
             toast.error("Error starting training!");
             console.error("Error starting training:", error);
+        } finally {
+            resetTargetAndSelectedColumns();
         }
     };
 
@@ -156,8 +157,7 @@ const SidebarBody = ({
             console.log(response.data);
             setBody(data);
             setColumnsList(previewColumnsList);
-            setSelectedColumns([]);
-            setTargetColumn("");
+            resetTargetAndSelectedColumns();
             toast.success("Changes saved successfully!");
         } catch (error) {
             console.error("Error updating file:", error);
@@ -170,6 +170,10 @@ const SidebarBody = ({
         setSelectedNavButton(buttonName)
     }
     const navButtonClass = (buttonName: string) => `rounded-lg ${selectedNavButton === buttonName ? 'bg-muted' : ''}`;
+    const resetTargetAndSelectedColumns = () => {
+        setSelectedColumns([]);
+        setTargetColumn("");
+    }
 
     // ProblemsNavBody functions
     const handleSelectProblem = (value: string) => {
@@ -177,9 +181,6 @@ const SidebarBody = ({
     }
 
     // ModelsNavBody functions
-    const handleSelectModel = (value: string) => {
-        setSelectedModel(value)
-    }
     const handleSetHiddenLayers = (value: string) => {
         setHiddenLayers(value)
     }
@@ -291,8 +292,6 @@ const SidebarBody = ({
                 )}
                 {selectedNavButton == "models" && (
                     <ModelsNavBody
-                        model={selectedModel}
-                        handleSelectModel={handleSelectModel}
                         hiddenLayers={hiddenLayers}
                         handleSetHiddenLayers={handleSetHiddenLayers}
                         epochs={epochs}
@@ -302,6 +301,11 @@ const SidebarBody = ({
                         batchNorm={batchNorm}
                         handleSetBatchNorm={handleSetBatchNorm}
                         handleTrain={handleTrain}
+                        columnsList={columnsList}
+                        selectedColumns={selectedColumns}
+                        setSelectedColumns={setSelectedColumns}
+                        targetColumn={targetColumn}
+                        setTargetColumn={setTargetColumn}
                     />
                 )}
                 {/* {selectedNavButton == "settings" && (
