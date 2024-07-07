@@ -31,6 +31,10 @@ const ModelsNavBody = ({
     handleSetLearningRate,
     gradClipping,
     handleSetGradClipping,
+    tolerance,
+    handleSetTolerance,
+    clusters,
+    handleSetClusters,
     handleTrain,
     columnsList,
     selectedColumns,
@@ -42,6 +46,7 @@ const ModelsNavBody = ({
     handleRemove,
     handleUnitsChange,
     handleRateChange,
+    problem,
 }: {
     epochs: number;
     handleSetEpochs: any;
@@ -49,6 +54,10 @@ const ModelsNavBody = ({
     handleSetLearningRate: any;
     gradClipping: boolean;
     handleSetGradClipping: any;
+    tolerance: number
+    handleSetTolerance: (value: number) => void;
+    clusters: number
+    handleSetClusters: (value: number) => void;
     handleTrain: any;
     columnsList: string[],
     selectedColumns: string[],
@@ -60,6 +69,7 @@ const ModelsNavBody = ({
     handleRemove: (id: number) => void;
     handleUnitsChange: (id: number, units: number) => void;
     handleRateChange: (id: number, rate: number) => void;
+    problem: string;
 }) => {
     const renderItem = (item: { name: string; id: number; units?: number, rate?: number }) => (
         <SortableList.Item id={item.id}>
@@ -126,27 +136,29 @@ const ModelsNavBody = ({
                         <legend className="-ml-1 px-1 text-sm font-medium">
                             Data Columns
                         </legend>
-                        <div className="grid gap-3">
-                            <Label htmlFor="target-column">Target Column*</Label>
-                            <Select
-                                onValueChange={setTargetColumn}
-                                value={targetColumn}
-                            >
-                                <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Select the target column" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel>Columns</SelectLabel>
-                                        {columnsList.map((column) => (
-                                            <SelectItem key={column} value={column}>
-                                                {column}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div>
+                        {problem !== "kmeans" && (
+                            <div className="grid gap-3">
+                                <Label htmlFor="target-column">Target Column*</Label>
+                                <Select
+                                    onValueChange={setTargetColumn}
+                                    value={targetColumn}
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select the target column" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectGroup>
+                                            <SelectLabel>Columns</SelectLabel>
+                                            {columnsList.map((column) => (
+                                                <SelectItem key={column} value={column}>
+                                                    {column}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
                         <div className="grid gap-3">
                             <Label htmlFor="selected-columns">Select Column(s)*</Label>
                             <MultiSelect
@@ -168,22 +180,42 @@ const ModelsNavBody = ({
                             Model Parameters
                         </legend>
                         <div className="grid gap-4">
-                            <div className="grid gap-3">
-                                <Label htmlFor="epochs">Number of Epochs*</Label>
-                                <Input id="epochs" type="number" placeholder="10" value={epochs}
-                                    onChange={(e) => handleSetEpochs(Number(e.target.value))} />
-                            </div>
-                            <div className="grid gap-3">
-                                <Label htmlFor="">Choose your layers*</Label>
-                                <fieldset className="h-auto overflow-auto w-full grid rounded-lg border p-3">
-                                    {layers.map((layer, index) => (
-                                        <Sheet key={index}>
-                                            <div
-                                            key={index}
-                                            className="flex flex-row justify-between items-center w-full px-5 py-2 hover:bg-gray-100"
-                                        >
-                                            <p>{layer.name}</p>
-                                            <div className="flex flex-row gap-3">
+                            {problem === "kmeans" ? (
+                                <>
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="epochs">Number of Iterations*</Label>
+                                        <Input id="epochs" type="number" placeholder="10" value={epochs}
+                                            onChange={(e) => handleSetEpochs(Number(e.target.value))} />
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="epochs">Number of Clusters*</Label>
+                                        <Input id="epochs" type="number" placeholder="10" value={clusters}
+                                            onChange={(e) => handleSetClusters(Number(e.target.value))} />
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="epochs">Tolerance*</Label>
+                                        <Input id="epochs" type="number" placeholder="0.0001" value={tolerance}
+                                            onChange={(e) => handleSetTolerance(Number(e.target.value))} />
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="epochs">Number of Epochs*</Label>
+                                        <Input id="epochs" type="number" placeholder="10" value={epochs}
+                                            onChange={(e) => handleSetEpochs(Number(e.target.value))} />
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="">Choose your layers*</Label>
+                                        <fieldset className="h-auto overflow-auto w-full grid rounded-lg border p-3">
+                                            {layers.map((layer, index) => (
+                                                <Sheet key={index}>
+                                                    <div
+                                                    key={index}
+                                                    className="flex flex-row justify-between items-center w-full px-5 py-2 hover:bg-gray-100"
+                                                >
+                                                    <p>{layer.name}</p>
+                                                    <div className="flex flex-row gap-3">
                                             <SheetTrigger className="h-auto w-4">
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 50 50">
 <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 25 11 A 3 3 0 0 0 22 14 A 3 3 0 0 0 25 17 A 3 3 0 0 0 28 14 A 3 3 0 0 0 25 11 z M 21 21 L 21 23 L 22 23 L 23 23 L 23 36 L 22 36 L 21 36 L 21 38 L 22 38 L 23 38 L 27 38 L 28 38 L 29 38 L 29 36 L 28 36 L 27 36 L 27 21 L 26 21 L 22 21 L 21 21 z"></path>
@@ -196,73 +228,75 @@ const ModelsNavBody = ({
                                                 </SheetHeader>
                                             </SheetContent>
                                             <button
-                                            className="h-auto"
-                                            type="button"
-                                            onClick={() => {
-                                                setItems([...items, { name: layer.name, id: items.length + 1 }]);
-                                            }}
-                                            >
-                                                <svg
-                                                    enableBackground="new 0 0 40 40"
-                                                    className="h-auto w-4"
-                                                    id="Layer_1"
-                                                    version="1.1"
-                                                    viewBox="0 0 512 512"
-                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-auto"
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setItems([...items, { name: layer.name, id: items.length + 1 }]);
+                                                    }}
                                                     >
-                                                    <path
-                                                    d="M256,512C114.625,512,0,397.391,0,256C0,114.609,114.625,0,256,0c141.391,0,256,114.609,256,256  C512,397.391,397.391,512,256,512z M256,64C149.969,64,64,149.969,64,256s85.969,192,192,192c106.047,0,192-85.969,192-192  S362.047,64,256,64z M288,384h-64v-96h-96v-64h96v-96h64v96h96v64h-96V384z"
-                                                    />
-                                                </svg>
-                                            </button>
-                                    </div>
-                                        </div>
+                                                        <svg
+                                                            enableBackground="new 0 0 40 40"
+                                                            className="h-auto w-4"
+                                                            id="Layer_1"
+                                                            version="1.1"
+                                                            viewBox="0 0 512 512"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            >
+                                                            <path
+                                                            d="M256,512C114.625,512,0,397.391,0,256C0,114.609,114.625,0,256,0c141.391,0,256,114.609,256,256  C512,397.391,397.391,512,256,512z M256,64C149.969,64,64,149.969,64,256s85.969,192,192,192c106.047,0,192-85.969,192-192  S362.047,64,256,64z M288,384h-64v-96h-96v-64h96v-96h64v96h96v64h-96V384z"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                            </div>
+                                                </div>
                                         </Sheet>
-                                    ))}
-
+                                            ))}
+        
                                     </fieldset>
-                                    <fieldset className="h-40 max-h-72 w-full grid rounded-lg border p-3">
-                                    <ScrollArea>
-                                        {items.length > 0 ? (
-                                            <SortableList
-                                            items={items}
-                                            onChange={setItems}
-                                            renderItem={(item) => (
-                                                renderItem(item)
-                                            )}
-                                        />
-                                        ) : (
-                                        <p className="text-sm justify-center items-center flex">
-                                            No Layers Selected...
-                                        </p>
-                                        )}
-                                    </ScrollArea>
-                                </fieldset>
-                            </div>
-                            <div className="grid gap-3">
-                                <Label htmlFor="dropout">Learning Rate</Label>
-                                <Input id="dropout" type="number" min="0" max="1" step="0.001" value={learningRate}
-                                    onChange={(e) => handleSetLearningRate(Math.min(Math.max(Number(e.target.value), 0.0000000001), 1))} />
-                            </div>
-                            <div className="grid gap-3">
-                                <Label htmlFor="batchnorm">Gradient Clipping</Label>
-                                <div className="flex gap-3 items-center">
-                                    <Checkbox id="batch-norm" checked={gradClipping}
-                                        onCheckedChange={() => handleSetGradClipping(!gradClipping)} />
-                                    <label
-                                        htmlFor="terms"
-                                        className="text-sm font-thin leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                    >
-                                        Toggle for gradient clipping
-                                    </label>
-                                </div>
-                            </div>
+                                            <fieldset className="h-40 max-h-72 w-full grid rounded-lg border p-3">
+                                            <ScrollArea>
+                                                {items.length > 0 ? (
+                                                    <SortableList
+                                                    items={items}
+                                                    onChange={setItems}
+                                                    renderItem={(item) => (
+                                                        renderItem(item)
+                                                    )}
+                                                />
+                                                ) : (
+                                                <p className="text-sm justify-center items-center flex">
+                                                    No Layers Selected...
+                                                </p>
+                                                )}
+                                            </ScrollArea>
+                                        </fieldset>
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="dropout">Learning Rate</Label>
+                                        <Input id="dropout" type="number" min="0" max="1" step="0.001" value={learningRate}
+                                            onChange={(e) => handleSetLearningRate(Math.min(Math.max(Number(e.target.value), (0.00001)), 1))} />
+                                    </div>
+                                    <div className="grid gap-3">
+                                        <Label htmlFor="batchnorm">Gradient Clipping</Label>
+                                        <div className="flex gap-3 items-center">
+                                            <Checkbox id="batch-norm" checked={gradClipping}
+                                                onCheckedChange={() => handleSetGradClipping(!gradClipping)} />
+                                            <label
+                                                htmlFor="terms"
+                                                className="text-sm font-thin leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                            >
+                                                Toggle for gradient clipping
+                                            </label>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </fieldset>
 
                     <div className="flex flex-1 justify-end">
                         <Button
-                            disabled={targetColumn == "" || selectedColumns.length <= 0 || epochs <= 0 || items.length == 0}
+                            disabled={(targetColumn == "" && problem !== "kmeans") || selectedColumns.length <= 0 || epochs <= 0 || (items.length == 0 && problem !== "kmeans") || (problem === "kmeans" && (clusters <= 0 || tolerance <= 0))}
                             className="default"
                             onClick={handleTrain}
                             type="button"

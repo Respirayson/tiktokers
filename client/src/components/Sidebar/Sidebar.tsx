@@ -16,6 +16,10 @@ const Sidebar = ({
     setLearningRate,
     gradClipping,
     setGradClipping,
+    tolerance,
+    setTolerance,
+    clusters,
+    setClusters,
 }: {
     fileName: string;
     columnsList: string[];
@@ -30,6 +34,10 @@ const Sidebar = ({
     setLearningRate: React.Dispatch<React.SetStateAction<number>>;
     gradClipping: boolean;
     setGradClipping: React.Dispatch<React.SetStateAction<boolean>>;
+    tolerance: number
+    setTolerance: React.Dispatch<React.SetStateAction<number>>;
+    clusters: number;
+    setClusters: React.Dispatch<React.SetStateAction<number>>;
 }) => {
     return (
         <div id="sidebar" className="w-full h-full flex flex-col justify-between" aria-label="Sidebar">
@@ -49,6 +57,10 @@ const Sidebar = ({
                     setLearningRate={setLearningRate}
                     gradClipping={gradClipping}
                     setGradClipping={setGradClipping}
+                    tolerance={tolerance}
+                    setTolerance={setTolerance}
+                    clusters={clusters}
+                    setClusters={setClusters}
                 />
             </div>
             <div className="p-4"><SidebarFooter /></div>

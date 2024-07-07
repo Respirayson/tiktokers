@@ -6,7 +6,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { Bird, Rabbit } from "lucide-react"
+import { Bird, Fish, Rabbit } from "lucide-react"
 
 
 
@@ -55,6 +55,21 @@ const ProblemsNavBody = ({ problem, handleSelectProblem }: { problem: string; ha
                                                 </p>
                                                 <p className="text-xs" data-description>
                                                     Make predictions and decisions with data.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="kmeans">
+                                        <div className="flex items-start gap-3 text-muted-foreground">
+                                            <Fish className="size-5" />
+                                            <div className="grid gap-0.5">
+                                                <p>
+                                                    <span className="font-medium text-foreground">
+                                                        K-Means Clustering
+                                                    </span>
+                                                </p>
+                                                <p className="text-xs" data-description>
+                                                    Perform unsupervised clustering.
                                                 </p>
                                             </div>
                                         </div>
