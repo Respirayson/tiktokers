@@ -26,10 +26,10 @@ const SidebarBody = ({
     setEpochs,
     problem,
     setProblem,
-    dropout,
-    setDropout,
-    batchNorm,
-    setBatchNorm,
+    learningRate,
+    setLearningRate,
+    gradClipping,
+    setGradClipping,
 }: {
     fileName: string;
     columnsList: string[];
@@ -40,10 +40,10 @@ const SidebarBody = ({
     setEpochs: React.Dispatch<React.SetStateAction<number>>;
     problem: string;
     setProblem: React.Dispatch<React.SetStateAction<string>>;
-    dropout: number;
-    setDropout: React.Dispatch<React.SetStateAction<number>>;
-    batchNorm: boolean;
-    setBatchNorm: React.Dispatch<React.SetStateAction<boolean>>;
+    learningRate: number;
+    setLearningRate: React.Dispatch<React.SetStateAction<number>>;
+    gradClipping: boolean;
+    setGradClipping: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
     // Handle side nav bar button changes
     const [selectedNavButton, setSelectedNavButton] = useState('settings') // Possible states: problems, models, operations, settings
@@ -88,8 +88,8 @@ const SidebarBody = ({
                 hidden_layers: items,
                 epochs: epochs,
                 selected_columns: selectedColumns,
-                dropout: dropout,
-                batchNorm: batchNorm,
+                learning_rate: learningRate,
+                grad_clipping: gradClipping,
             });
             console.log(response.data);
             toast.info("Training started!");
@@ -183,11 +183,11 @@ const SidebarBody = ({
     const handleSetEpochs = (value: number) => {
         setEpochs(value)
     }
-    const handleSetDropout = (value: number) => {
-        setDropout(value)
+    const handleSetLearningRate = (value: number) => {
+        setLearningRate(value)
     }
-    const handleSetBatchNorm = (value: boolean) => {
-        setBatchNorm(value)
+    const handleSetGradClipping = (value: boolean) => {
+        setGradClipping(value)
     }
     const handleRemove = (id: number) => {
         setItems((items) => items.filter((item) => item.id !== id));
@@ -298,10 +298,10 @@ const SidebarBody = ({
                     <ModelsNavBody
                         epochs={epochs}
                         handleSetEpochs={handleSetEpochs}
-                        dropout={dropout}
-                        handleSetDropout={handleSetDropout}
-                        batchNorm={batchNorm}
-                        handleSetBatchNorm={handleSetBatchNorm}
+                        learningRate={learningRate}
+                        handleSetLearningRate={handleSetLearningRate}
+                        gradClipping={gradClipping}
+                        handleSetGradClipping={handleSetGradClipping}
                         handleTrain={handleTrain}
                         columnsList={columnsList}
                         selectedColumns={selectedColumns}

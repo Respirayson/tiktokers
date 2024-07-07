@@ -36,8 +36,8 @@ function AppRefactor() {
     const [fileName, setFileName] = useState<string>("");
     const [displayName, setDisplayName] = useState<string>("");
     const [problem, setProblem] = useState<string>("");
-    const [dropout, setDropout] = useState<number>(0);
-    const [batchNorm, setBatchNorm] = useState<boolean>(false);
+    const [learningRate, setLearningRate] = useState<number>(0.001);
+    const [gradClipping, setGradClipping] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [statistics, setStatistics] = useState<Array<StatisticData<object>>>(
         []
@@ -193,10 +193,10 @@ function AppRefactor() {
                             setSelectedButton={setSelectedButton}
                             problem={problem}
                             setProblem={setProblem}
-                            dropout={dropout}
-                            setDropout={setDropout}
-                            batchNorm={batchNorm}
-                            setBatchNorm={setBatchNorm}
+                            learningRate={learningRate}
+                            setLearningRate={setLearningRate}
+                            gradClipping={gradClipping}
+                            setGradClipping={setGradClipping}
                         />
                     </div>
                 </ResizablePanel>

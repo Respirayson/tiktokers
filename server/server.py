@@ -121,7 +121,7 @@ class ConfigurableLinRegNN(nn.Module):
         return self.model(x)
 
 
-def train_model(file_path, target_column, selected_columns, layers_config, epochs, room):
+def train_model(file_path, target_column, selected_columns, layers_config, epochs, learning_rate, grad_clipping, room):
     try:
         df = pd.read_csv(file_path)
         df = df[selected_columns + [target_column]]
@@ -142,7 +142,7 @@ def train_model(file_path, target_column, selected_columns, layers_config, epoch
 
         model = ConfigurableNN(input_size, layers_config, num_classes)
         criterion = nn.CrossEntropyLoss()  # Use CrossEntropyLoss for multi-class
-        optimizer = optim.Adam(model.parameters(), lr=0.001)
+        optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -155,6 +155,8 @@ def train_model(file_path, target_column, selected_columns, layers_config, epoch
                 outputs = model(inputs)
                 loss = criterion(outputs, targets)
                 loss.backward()
+                if grad_clipping:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                 optimizer.step()
 
             socketio.emit('training_progress', {'epoch': epoch + 1, 'loss': loss.item()}, room=room)
@@ -187,7 +189,7 @@ def train_model(file_path, target_column, selected_columns, layers_config, epoch
         traceback.print_exc()
         socketio.emit('training_error', {'message': str(e)}, room=room)
 
-def train_model_lin_reg(file_path, target_column, selected_columns, layers_config, epochs, room):
+def train_model_lin_reg(file_path, target_column, selected_columns, layers_config, epochs, learning_rate, grad_clipping, room):
     try:
         df = pd.read_csv(file_path)
         df = df[selected_columns + [target_column]]
@@ -200,7 +202,7 @@ def train_model_lin_reg(file_path, target_column, selected_columns, layers_confi
 
         model = ConfigurableLinRegNN(input_size, layers_config) # Input fields batch_norm and dropout later
         criterion = nn.MSELoss()  # Use Mean Squared Error for Linear Regression
-        optimizer = optim.Adam(model.parameters(), lr=0.001)
+        optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         
@@ -216,6 +218,8 @@ def train_model_lin_reg(file_path, target_column, selected_columns, layers_confi
                 outputs = model(inputs)
                 loss = criterion(outputs, targets)
                 loss.backward()
+                if grad_clipping:
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                 optimizer.step()
 
             socketio.emit('training_progress', {'epoch': epoch + 1, 'loss': loss.item()}, room=room)
@@ -242,13 +246,15 @@ class TrainModelHandler(Resource):
         selected_columns = data['selected_columns']
         layers_config = data['hidden_layers']
         epochs = data['epochs']
+        learning_rate = data['learning_rate']
+        grad_clipping = data['grad_clipping']
 
         file_path = os.path.join("data", filename)
 
         # Join the room based on filename
         room = filename
 
-        thread = threading.Thread(target=train_model, args=(file_path, target_column, selected_columns, layers_config, epochs, room))
+        thread = threading.Thread(target=train_model, args=(file_path, target_column, selected_columns, layers_config, epochs, learning_rate, grad_clipping, room))
         thread.start()
         return jsonify({"status": "success", "message": "Model training started."})
 
@@ -260,13 +266,15 @@ class TrainLinRegModelHandler(Resource):
         selected_columns = data['selected_columns']
         hidden_layers = data['hidden_layers']
         epochs = data['epochs']
+        learning_rate = data['learning_rate']
+        grad_clipping = data['grad_clipping']
         
         file_path = os.path.join("data", filename)
 
         # Join the room based on filename
         room = filename
 
-        thread = threading.Thread(target=train_model_lin_reg, args=(file_path, target_column, selected_columns, hidden_layers, epochs, room))
+        thread = threading.Thread(target=train_model_lin_reg, args=(file_path, target_column, selected_columns, hidden_layers, epochs, learning_rate, grad_clipping, room))
         thread.start()
         return jsonify({"status": "success", "message": "Model training started."})
     
