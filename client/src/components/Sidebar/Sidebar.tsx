@@ -12,10 +12,10 @@ const Sidebar = ({
     setSelectedButton,
     problem,
     setProblem,
-    dropout,
-    setDropout,
-    batchNorm,
-    setBatchNorm,
+    learningRate,
+    setLearningRate,
+    gradClipping,
+    setGradClipping,
 }: {
     fileName: string;
     columnsList: string[];
@@ -26,10 +26,10 @@ const Sidebar = ({
     setSelectedButton: React.Dispatch<React.SetStateAction<string>>;
     problem: string;
     setProblem: React.Dispatch<React.SetStateAction<string>>;
-    dropout: number;
-    setDropout: React.Dispatch<React.SetStateAction<number>>;
-    batchNorm: boolean;
-    setBatchNorm: React.Dispatch<React.SetStateAction<boolean>>;
+    learningRate: number;
+    setLearningRate: React.Dispatch<React.SetStateAction<number>>;
+    gradClipping: boolean;
+    setGradClipping: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
     return (
         <div id="sidebar" className="w-full h-full flex flex-col justify-between" aria-label="Sidebar">
@@ -45,10 +45,10 @@ const Sidebar = ({
                     setSelectedButton={setSelectedButton}
                     problem={problem}
                     setProblem={setProblem}
-                    dropout={dropout}
-                    setDropout={setDropout}
-                    batchNorm={batchNorm}
-                    setBatchNorm={setBatchNorm}
+                    learningRate={learningRate}
+                    setLearningRate={setLearningRate}
+                    gradClipping={gradClipping}
+                    setGradClipping={setGradClipping}
                 />
             </div>
             <div className="p-4"><SidebarFooter /></div>

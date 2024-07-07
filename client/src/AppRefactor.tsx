@@ -25,7 +25,9 @@ import io from "socket.io-client";
 import 'react-toastify/dist/ReactToastify.css'
 import { Button } from "./components/ui/button";
 
-const socket = io("https://tiktokers.onrender.com");
+const API_URL = import.meta.env.VITE_SERVER_URL;
+
+const socket = io(API_URL);
 
 function AppRefactor() {
     const [headers, setHeaders] = useState<Array<string>>([]);
@@ -34,8 +36,8 @@ function AppRefactor() {
     const [fileName, setFileName] = useState<string>("");
     const [displayName, setDisplayName] = useState<string>("");
     const [problem, setProblem] = useState<string>("");
-    const [dropout, setDropout] = useState<number>(0);
-    const [batchNorm, setBatchNorm] = useState<boolean>(false);
+    const [learningRate, setLearningRate] = useState<number>(0.001);
+    const [gradClipping, setGradClipping] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [statistics, setStatistics] = useState<Array<StatisticData<object>>>(
         []
@@ -77,7 +79,7 @@ function AppRefactor() {
 
                         try {
                             const response = await axios.post(
-                                "https://tiktokers.onrender.com/upload",
+                                `${API_URL}/upload`,
                                 formData,
                                 {
                                     headers: {
@@ -154,7 +156,7 @@ function AppRefactor() {
     const handleExportTrainingModel = async () => {
         try {
             const response = await axios.post(
-                "https://tiktokers.onrender.com/export",
+                `${API_URL}/export`,
                 {
                     filename: trainedModelFilename,
                 },
@@ -191,10 +193,10 @@ function AppRefactor() {
                             setSelectedButton={setSelectedButton}
                             problem={problem}
                             setProblem={setProblem}
-                            dropout={dropout}
-                            setDropout={setDropout}
-                            batchNorm={batchNorm}
-                            setBatchNorm={setBatchNorm}
+                            learningRate={learningRate}
+                            setLearningRate={setLearningRate}
+                            gradClipping={gradClipping}
+                            setGradClipping={setGradClipping}
                         />
                     </div>
                 </ResizablePanel>

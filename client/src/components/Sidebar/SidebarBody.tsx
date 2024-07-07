@@ -14,7 +14,7 @@ import { toast } from 'react-toastify'
 import axios from 'axios'
 import OperationsNavBody from './OperationsNavBody'
 
-const BASE_URL = "https://tiktokers.onrender.com";
+const API_URL = import.meta.env.VITE_SERVER_URL;
 
 const SidebarBody = ({
     fileName,
@@ -26,10 +26,10 @@ const SidebarBody = ({
     setEpochs,
     problem,
     setProblem,
-    dropout,
-    setDropout,
-    batchNorm,
-    setBatchNorm,
+    learningRate,
+    setLearningRate,
+    gradClipping,
+    setGradClipping,
 }: {
     fileName: string;
     columnsList: string[];
@@ -40,10 +40,10 @@ const SidebarBody = ({
     setEpochs: React.Dispatch<React.SetStateAction<number>>;
     problem: string;
     setProblem: React.Dispatch<React.SetStateAction<string>>;
-    dropout: number;
-    setDropout: React.Dispatch<React.SetStateAction<number>>;
-    batchNorm: boolean;
-    setBatchNorm: React.Dispatch<React.SetStateAction<boolean>>;
+    learningRate: number;
+    setLearningRate: React.Dispatch<React.SetStateAction<number>>;
+    gradClipping: boolean;
+    setGradClipping: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
     // Handle side nav bar button changes
     const [selectedNavButton, setSelectedNavButton] = useState('settings') // Possible states: problems, models, operations, settings
@@ -71,10 +71,10 @@ const SidebarBody = ({
             let api_url = ""
             switch (problem) {
                 case "classification":
-                    api_url = "https://tiktokers.onrender.com/train"
+                    api_url = `${API_URL}/train`
                     break;
                 case "regression":
-                    api_url = "https://tiktokers.onrender.com/train/linreg"
+                    api_url = `${API_URL}/train/linreg`
                     break;
                 default:
                     alert("Select ML problem")
@@ -88,8 +88,8 @@ const SidebarBody = ({
                 hidden_layers: items,
                 epochs: epochs,
                 selected_columns: selectedColumns,
-                dropout: dropout,
-                batchNorm: batchNorm,
+                learning_rate: learningRate,
+                grad_clipping: gradClipping,
             });
             console.log(response.data);
             toast.info("Training started!");
@@ -127,7 +127,7 @@ const SidebarBody = ({
 
         try {
             const response = await axios.post(
-                `${BASE_URL}/${selectedOperation?.value}`,
+                `${API_URL}/${selectedOperation?.value}`,
                 reqBody
             );
             let responseData = response.data;
@@ -149,7 +149,7 @@ const SidebarBody = ({
     // Handle Click
     const handleSaveChanges = async () => {
         try {
-            const response = await axios.post(`${BASE_URL}/update`, {
+            const response = await axios.post(`${API_URL}/update`, {
                 filename: fileName,
                 data: data,
             });
@@ -183,11 +183,11 @@ const SidebarBody = ({
     const handleSetEpochs = (value: number) => {
         setEpochs(value)
     }
-    const handleSetDropout = (value: number) => {
-        setDropout(value)
+    const handleSetLearningRate = (value: number) => {
+        setLearningRate(value)
     }
-    const handleSetBatchNorm = (value: boolean) => {
-        setBatchNorm(value)
+    const handleSetGradClipping = (value: boolean) => {
+        setGradClipping(value)
     }
     const handleRemove = (id: number) => {
         setItems((items) => items.filter((item) => item.id !== id));
@@ -298,10 +298,10 @@ const SidebarBody = ({
                     <ModelsNavBody
                         epochs={epochs}
                         handleSetEpochs={handleSetEpochs}
-                        dropout={dropout}
-                        handleSetDropout={handleSetDropout}
-                        batchNorm={batchNorm}
-                        handleSetBatchNorm={handleSetBatchNorm}
+                        learningRate={learningRate}
+                        handleSetLearningRate={handleSetLearningRate}
+                        gradClipping={gradClipping}
+                        handleSetGradClipping={handleSetGradClipping}
                         handleTrain={handleTrain}
                         columnsList={columnsList}
                         selectedColumns={selectedColumns}

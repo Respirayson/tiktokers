@@ -18,10 +18,10 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 const ModelsNavBody = ({
     epochs,
     handleSetEpochs,
-    dropout,
-    handleSetDropout,
-    batchNorm,
-    handleSetBatchNorm,
+    learningRate,
+    handleSetLearningRate,
+    gradClipping,
+    handleSetGradClipping,
     handleTrain,
     columnsList,
     selectedColumns,
@@ -35,10 +35,10 @@ const ModelsNavBody = ({
 }: {
     epochs: number;
     handleSetEpochs: any;
-    dropout: number;
-    handleSetDropout: any;
-    batchNorm: boolean;
-    handleSetBatchNorm: any;
+    learningRate: number;
+    handleSetLearningRate: any;
+    gradClipping: boolean;
+    handleSetGradClipping: any;
     handleTrain: any;
     columnsList: string[],
     selectedColumns: string[],
@@ -181,20 +181,20 @@ const ModelsNavBody = ({
                                 </fieldset>
                             </div>
                             <div className="grid gap-3">
-                                <Label htmlFor="dropout">Dropout Rate</Label>
-                                <Input id="dropout" type="number" min="0" max="1" step="0.1" value={dropout}
-                                    onChange={(e) => handleSetDropout(Math.min(Math.max(Number(e.target.value), 0), 1))} />
+                                <Label htmlFor="dropout">Learning Rate</Label>
+                                <Input id="dropout" type="number" min="0" max="1" step="0.001" value={learningRate}
+                                    onChange={(e) => handleSetLearningRate(Math.min(Math.max(Number(e.target.value), 0.0000000001), 1))} />
                             </div>
                             <div className="grid gap-3">
-                                <Label htmlFor="batchnorm">Batch Normalisation</Label>
+                                <Label htmlFor="batchnorm">Gradient Clipping</Label>
                                 <div className="flex gap-3 items-center">
-                                    <Checkbox id="batch-norm" checked={batchNorm}
-                                        onCheckedChange={() => handleSetBatchNorm(!batchNorm)} />
+                                    <Checkbox id="batch-norm" checked={gradClipping}
+                                        onCheckedChange={() => handleSetGradClipping(!gradClipping)} />
                                     <label
                                         htmlFor="terms"
                                         className="text-sm font-thin leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                     >
-                                        Toggle for batch normalisation
+                                        Toggle for gradient clipping
                                     </label>
                                 </div>
                             </div>
