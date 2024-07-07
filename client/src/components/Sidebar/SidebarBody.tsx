@@ -22,8 +22,6 @@ const SidebarBody = ({
     setColumnsList,
     setSelectedButton,
     setBody,
-    hiddenLayers,
-    setHiddenLayers,
     epochs,
     setEpochs,
     problem,
@@ -38,8 +36,6 @@ const SidebarBody = ({
     setColumnsList: React.Dispatch<React.SetStateAction<string[]>>;
     setSelectedButton: React.Dispatch<React.SetStateAction<string>>;
     setBody: React.Dispatch<React.SetStateAction<object[]>>;
-    hiddenLayers: string;
-    setHiddenLayers: React.Dispatch<React.SetStateAction<string>>;
     epochs: number;
     setEpochs: React.Dispatch<React.SetStateAction<number>>;
     problem: string;
@@ -66,6 +62,8 @@ const SidebarBody = ({
         "exploration/smote",
         "exploration/undersample",
     ];
+    const [items, setItems] = useState<{ name: string; id: number; units?: number }[]>([]);
+    
 
     // Training function
     const handleTrain = async () => {
@@ -82,11 +80,12 @@ const SidebarBody = ({
                     alert("Select ML problem")
                     return
             }
+            console.log(items)
             setSelectedButton("Results")
             const response = await axios.post(`${api_url}`, {
                 filename: fileName,
                 target_column: targetColumn,
-                hidden_layers: hiddenLayers.split(",").map((v) => parseInt(v.trim())),
+                hidden_layers: items,
                 epochs: epochs,
                 selected_columns: selectedColumns,
                 dropout: dropout,
@@ -181,9 +180,6 @@ const SidebarBody = ({
     }
 
     // ModelsNavBody functions
-    const handleSetHiddenLayers = (value: string) => {
-        setHiddenLayers(value)
-    }
     const handleSetEpochs = (value: number) => {
         setEpochs(value)
     }
@@ -193,6 +189,14 @@ const SidebarBody = ({
     const handleSetBatchNorm = (value: boolean) => {
         setBatchNorm(value)
     }
+    const handleRemove = (id: number) => {
+        setItems((items) => items.filter((item) => item.id !== id));
+    };
+    const handleUnitsChange = (id: number, units: number) => {
+        setItems((items) =>
+        items.map((item) => (item.id === id ? { ...item, units } : item))
+        );
+    };
 
     return (
         <div className='flex flex-1'>
@@ -292,8 +296,6 @@ const SidebarBody = ({
                 )}
                 {selectedNavButton == "models" && (
                     <ModelsNavBody
-                        hiddenLayers={hiddenLayers}
-                        handleSetHiddenLayers={handleSetHiddenLayers}
                         epochs={epochs}
                         handleSetEpochs={handleSetEpochs}
                         dropout={dropout}
@@ -306,6 +308,10 @@ const SidebarBody = ({
                         setSelectedColumns={setSelectedColumns}
                         targetColumn={targetColumn}
                         setTargetColumn={setTargetColumn}
+                        items={items}
+                        setItems={setItems}
+                        handleRemove={handleRemove}
+                        handleUnitsChange={handleUnitsChange}
                     />
                 )}
                 {/* {selectedNavButton == "settings" && (

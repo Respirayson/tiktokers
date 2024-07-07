@@ -7,9 +7,7 @@ const Sidebar = ({
     columnsList,
     setColumnsList,
     setBody,
-    hiddenLayers,
     epochs,
-    setHiddenLayers,
     setEpochs,
     setSelectedButton,
     problem,
@@ -23,9 +21,7 @@ const Sidebar = ({
     columnsList: string[];
     setColumnsList: React.Dispatch<React.SetStateAction<string[]>>;
     setBody: React.Dispatch<React.SetStateAction<object[]>>;
-    hiddenLayers: string;
     epochs: number;
-    setHiddenLayers: React.Dispatch<React.SetStateAction<string>>;
     setEpochs: React.Dispatch<React.SetStateAction<number>>;
     setSelectedButton: React.Dispatch<React.SetStateAction<string>>;
     problem: string;
@@ -40,8 +36,6 @@ const Sidebar = ({
             <div className="p-4"><SidebarHeader /></div>
             <div className="flex flex-1 h-screen border-y-2 overflow-hidden">
                 <SidebarBody
-                    hiddenLayers={hiddenLayers}
-                    setHiddenLayers={setHiddenLayers}
                     epochs={epochs}
                     setEpochs={setEpochs}
                     setBody={setBody}

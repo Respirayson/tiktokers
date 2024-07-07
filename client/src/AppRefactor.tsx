@@ -41,7 +41,6 @@ function AppRefactor() {
         []
     );
     const [heatmap, setHeatmap] = useState<string>('');
-    const [hiddenLayers, setHiddenLayers] = useState<string>("128,64");
     const [epochs, setEpochs] = useState<number>(10);
     const [trainingProgress, setTrainingProgress] = useState<number>(0);
     const [currentEpoch, setCurrentEpoch] = useState<number>(0);
@@ -182,8 +181,6 @@ function AppRefactor() {
                 <ResizablePanel defaultSize={25} maxSize={25} minSize={20}>
                     <div className="flex h-full items-center justify-center">
                         <Sidebar
-                            hiddenLayers={hiddenLayers}
-                            setHiddenLayers={setHiddenLayers}
                             epochs={epochs}
                             setEpochs={setEpochs}
                             setBody={setDataBody}

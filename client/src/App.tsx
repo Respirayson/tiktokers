@@ -19,6 +19,8 @@ import { v4 as uuidv4 } from "uuid";
 import { ToastContainer, toast } from "react-toastify";
 import io from "socket.io-client";
 import 'react-toastify/dist/ReactToastify.css'
+import { SortableList } from "./components/SortableList/SortableList";
+import { Input } from "./components/ui/input";
 
 const socket = io("http://localhost:5001");
 
@@ -43,8 +45,13 @@ function App() {
   const [currentLoss, setCurrentLoss] = useState<number>(0);
   const [confusionMatrix, setConfusionMatrix] = useState<string | null>(null);
   const [selectedButton, setSelectedButton] = useState("Data");
-
+  
   const analyticsColumns = AnalyticsColumns(analyticHeaders);
+  
+  const [items, setItems] = useState<{ id: number }[]>([]);
+  const handleRemove = (id: number) => {
+    setItems((items) => items.filter((item) => item.id !== id));
+  };
 
   const csvUpload = async (files: FileList | null) => {
     if (files) {
@@ -232,6 +239,42 @@ function App() {
                 />
               </div>
             )}
+
+            <div className="flex flex-col h-4 w-[75%]">
+              <SortableList
+                items={items}
+                onChange={setItems}
+                renderItem={(item) => (
+                  <SortableList.Item id={item.id}>
+                    <p>Linear Layer {item.id}</p>
+                    <Input
+                      placeholder="Enter the number of hidden units"
+                      type="text"
+                    />
+                    <button
+                      className="h-8 w-8 ml-2"
+                      onClick={() => handleRemove(item.id)}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        x="0px"
+                        y="0px"
+                        viewBox="0 0 50 50"
+                        className="h-4 w-4"
+                      >
+                        <path d="M 7.71875 6.28125 L 6.28125 7.71875 L 23.5625 25 L 6.28125 42.28125 L 7.71875 43.71875 L 25 26.4375 L 42.28125 43.71875 L 43.71875 42.28125 L 26.4375 25 L 43.71875 7.71875 L 42.28125 6.28125 L 25 23.5625 Z"></path>
+                      </svg>
+                    </button>
+                    <SortableList.DragHandle />
+                  </SortableList.Item>
+                )}
+              />
+            </div>
+            <button
+              onClick={() => {
+                setItems([...items, { id: items.length + 1 }]);
+              }}
+            >Click me</button>
           </div>
         )}
       </div>
