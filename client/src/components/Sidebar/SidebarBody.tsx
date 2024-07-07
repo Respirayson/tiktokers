@@ -30,6 +30,10 @@ const SidebarBody = ({
     setLearningRate,
     gradClipping,
     setGradClipping,
+    tolerance,
+    setTolerance,
+    clusters,
+    setClusters,
 }: {
     fileName: string;
     columnsList: string[];
@@ -44,6 +48,10 @@ const SidebarBody = ({
     setLearningRate: React.Dispatch<React.SetStateAction<number>>;
     gradClipping: boolean;
     setGradClipping: React.Dispatch<React.SetStateAction<boolean>>;
+    tolerance: number;
+    setTolerance: React.Dispatch<React.SetStateAction<number>>;
+    clusters: number;
+    setClusters: React.Dispatch<React.SetStateAction<number>>;
 }) => {
     // Handle side nav bar button changes
     const [selectedNavButton, setSelectedNavButton] = useState('settings') // Possible states: problems, models, operations, settings
@@ -68,13 +76,16 @@ const SidebarBody = ({
     // Training function
     const handleTrain = async () => {
         try {
-            let api_url = ""
+            let api_url = "";
             switch (problem) {
                 case "classification":
-                    api_url = `${API_URL}/train`
+                    api_url = `${API_URL}/train`;
                     break;
                 case "regression":
-                    api_url = `${API_URL}/train/linreg`
+                    api_url = `${API_URL}/train/linreg`;
+                    break;
+                case "kmeans":
+                    api_url = `${API_URL}/train/kmeans`;
                     break;
                 default:
                     alert("Select ML problem")
@@ -90,6 +101,8 @@ const SidebarBody = ({
                 selected_columns: selectedColumns,
                 learning_rate: learningRate,
                 grad_clipping: gradClipping,
+                clusters: clusters,
+                tolerance: tolerance,
             });
             console.log(response.data);
             toast.info("Training started!");
@@ -188,6 +201,12 @@ const SidebarBody = ({
     }
     const handleSetGradClipping = (value: boolean) => {
         setGradClipping(value)
+    }
+    const handleSetTolerance = (value: number) => {
+        setTolerance(value)
+    }
+    const handleSetClusters = (value: number) => {
+        setClusters(value)
     }
     const handleRemove = (id: number) => {
         setItems((items) => items.filter((item) => item.id !== id));
@@ -307,6 +326,10 @@ const SidebarBody = ({
                         handleSetLearningRate={handleSetLearningRate}
                         gradClipping={gradClipping}
                         handleSetGradClipping={handleSetGradClipping}
+                        tolerance={tolerance}
+                        handleSetTolerance={handleSetTolerance}
+                        clusters={clusters}
+                        handleSetClusters={handleSetClusters}
                         handleTrain={handleTrain}
                         columnsList={columnsList}
                         selectedColumns={selectedColumns}
@@ -318,6 +341,7 @@ const SidebarBody = ({
                         handleRemove={handleRemove}
                         handleUnitsChange={handleUnitsChange}
                         handleRateChange={handleRateChange}
+                        problem={problem}
                     />
                 )}
                 {/* {selectedNavButton == "settings" && (
