@@ -1,3 +1,7 @@
+import eventlet 
+
+eventlet.monkey_patch() 
+
 from flask import Flask, request, send_file, jsonify
 from flask_restful import reqparse, abort, Api, Resource
 from flask_cors import CORS
@@ -34,16 +38,14 @@ from routes.explorationapi import (
     SmoteHandler,
     UpdateHandler,
 )
-from routes.preprocessingapi import EncodeHandler, ScaleHandler, SelectFeaturesHandler
+from routes.preprocessingapi import EncodeHandler, ScaleHandler, SelectFeaturesHandler, DropColumns
 from logging.handlers import RotatingFileHandler
 from common import settings
 from pathlib import Path
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
-import eventlet 
 
-eventlet.monkey_patch() 
 load_dotenv()
 logger = logging.getLogger()
 socketio = SocketIO()
@@ -346,6 +348,7 @@ def start_app():
         api.add_resource(EncodeHandler, "/preprocessing/encode")
         api.add_resource(ScaleHandler, "/preprocessing/scale")
         api.add_resource(SelectFeaturesHandler, "/preprocessing/features")
+        api.add_resource(DropColumns, "/preprocessing/drop")
 
         @socketio.on("connect")
         def handle_connect():
