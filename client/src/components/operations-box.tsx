@@ -47,6 +47,10 @@ const commonOperations: Operation[] = [
     value: "exploration/outlier",
     label: "Handle Outliers",
   },
+  {
+    value: "preprocessing/drop",
+    label: "Drop Columns",
+  }
 ];
 
 const classificationOperations: Operation[] = [

@@ -62,7 +62,7 @@ const SidebarBody = ({
         "exploration/smote",
         "exploration/undersample",
     ];
-    const [items, setItems] = useState<{ name: string; id: number; units?: number }[]>([]);
+    const [items, setItems] = useState<{ name: string; id: number; units?: number, rate?: number }[]>([]);
     
 
     // Training function
@@ -197,6 +197,11 @@ const SidebarBody = ({
         items.map((item) => (item.id === id ? { ...item, units } : item))
         );
     };
+    const handleRateChange = (id: number, rate: number) => {
+        setItems((items) =>
+        items.map((item) => (item.id === id ? { ...item, rate } : item))
+        );
+    }
 
     return (
         <div className='flex flex-1'>
@@ -312,6 +317,7 @@ const SidebarBody = ({
                         setItems={setItems}
                         handleRemove={handleRemove}
                         handleUnitsChange={handleUnitsChange}
+                        handleRateChange={handleRateChange}
                     />
                 )}
                 {/* {selectedNavButton == "settings" && (
