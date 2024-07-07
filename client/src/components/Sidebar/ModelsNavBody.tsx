@@ -41,6 +41,7 @@ const ModelsNavBody = ({
     setItems,
     handleRemove,
     handleUnitsChange,
+    handleRateChange,
 }: {
     epochs: number;
     handleSetEpochs: any;
@@ -54,12 +55,13 @@ const ModelsNavBody = ({
     setSelectedColumns: any,
     targetColumn: string,
     setTargetColumn: any,
-    items: { name: string; id: number; units?: number }[];
-    setItems: React.Dispatch<React.SetStateAction<{ name: string; id: number; units?: number | undefined; }[]>>;
+    items: { name: string; id: number; units?: number, rate?: number }[];
+    setItems: React.Dispatch<React.SetStateAction<{ name: string; id: number; units?: number, rate?: number | undefined; }[]>>;
     handleRemove: (id: number) => void;
     handleUnitsChange: (id: number, units: number) => void;
+    handleRateChange: (id: number, rate: number) => void;
 }) => {
-    const renderItem = (item: { name: string; id: number; units?: number }) => (
+    const renderItem = (item: { name: string; id: number; units?: number, rate?: number }) => (
         <SortableList.Item id={item.id}>
           <div className="flex flex-row items-center">
             <p className="pl-1">{item.name} Layer</p>
@@ -71,6 +73,16 @@ const ModelsNavBody = ({
                 value={item.units || ""}
                 onChange={(e) => handleUnitsChange(item.id, Number(e.target.value))}
               />
+            )}
+            {item.name === "Dropout" && (
+                <Input
+                    type="number"
+                    placeholder="Rate"
+                    min="0" max="1" step="0.1" 
+                    className="ml-3 text-xs w-[85%]"
+                    value={item.rate || ""}
+                    onChange={(e) => handleRateChange(item.id, Number(e.target.value))}
+                />
             )}
             <button className="DragHandle pr-0" onClick={() => handleRemove(item.id)}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" className="h-3 w-3">
@@ -98,7 +110,11 @@ const ModelsNavBody = ({
         {
             name: "BatchNorm",
             description: "Batch Normalization normalizes the output of a previous activation layer by subtracting the batch mean and dividing by the batch standard deviation. It helps stabilize and accelerate training by reducing internal covariate shift."
-        }
+        },
+        {
+            name: "Dropout",
+            description: "Dropout is a regularization technique that randomly sets a fraction of input units to 0 at each update during training. This prevents overfitting and improves the generalization of the model."
+        },
     ];
     
 
