@@ -41,7 +41,9 @@ from pathlib import Path
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+import eventlet 
 
+eventlet.monkey_patch() 
 load_dotenv()
 logger = logging.getLogger()
 socketio = SocketIO()
@@ -298,7 +300,7 @@ def start_app():
         app.config["CORS_HEADERS"] = "Content-Type"
 
         api = Api(app)
-        socketio.init_app(app, cors_allowed_origins="*")
+        socketio.init_app(app, cors_allowed_origins="*", async_mode="eventlet")
 
         # conn = psycopg2.connect(
         #     host=os.getenv("DB_HOST"),
@@ -365,7 +367,7 @@ if __name__ == "__main__":
         my_socketio.run(
             my_app,
             use_reloader=True,
-            host="localhost",
+            host="127.0.0.1",
             port=int(settings.SERVER_PORT),
             debug=True,
         )
