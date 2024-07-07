@@ -50,6 +50,9 @@ function AppRefactor() {
     const [currentEpoch, setCurrentEpoch] = useState<number>(0);
     const [currentLoss, setCurrentLoss] = useState<number>(0);
     const [confusionMatrix, setConfusionMatrix] = useState<string | null>(null);
+    const [accuracy, setAccuracy] = useState<number | null>(null);
+    const [mae, setMae] = useState<number | null>(null);
+    const [r2, setR2] = useState<number | null>(null);
     const [selectedButton, setSelectedButton] = useState("Data");
     const [trainedModelFilename, setTrainedModelFilename] = useState("");
 
@@ -135,6 +138,9 @@ function AppRefactor() {
             toast.success("Training complete!");
             setTrainedModelFilename(data.filename)
             setConfusionMatrix(data.confusion_matrix);
+            setAccuracy(data.accuracy);
+            setMae(data.mae);
+            setR2(data.r2);
             if (problem === "kmeans") {
                 setTrainingProgress(100);
             }
@@ -322,6 +328,24 @@ function AppRefactor() {
                                                     alt="Confusion Matrix"
                                                 />
                                             </div>
+                                        )}
+
+                                        {accuracy && (
+                                            <div className="text-center mt-4">
+                                                Accuracy: {accuracy.toFixed(2)}
+                                            </div>
+                                        )}
+
+                                        {mae && (
+                                            <div className="text-center mt-4">
+                                                Mean Absolute Error: {mae.toFixed(2)}
+                                                </div>
+                                        )}
+
+                                        {r2 && (
+                                            <div className="text-center mt-4">
+                                                R2 Score: {r2.toFixed(2)}
+                                                </div>
                                         )}
                                     </div>
                                 </div>
