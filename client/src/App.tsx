@@ -22,7 +22,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { SortableList } from "./components/SortableList/SortableList";
 import { Input } from "./components/ui/input";
 
-const socket = io("https://tiktokers.onrender.com");
+const socket = io("http://localhost:5001");
 
 function App() {
   const [headers, setHeaders] = useState<Array<string>>([]);
@@ -79,7 +79,7 @@ function App() {
 
             try {
               const response = await axios.post(
-                "https://tiktokers.onrender.com/upload",
+                "http://localhost:5001/upload",
                 formData,
                 {
                   headers: {

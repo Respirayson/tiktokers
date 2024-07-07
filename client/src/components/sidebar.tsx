@@ -33,7 +33,7 @@ import { DataTable } from "./DataTable/DataTable";
 import DataColumns from "./DataTable/DataColumns";
 import { toast } from "react-toastify";
 
-const BASE_URL = "https://tiktokers.onrender.com";
+const BASE_URL = "http://localhost:5001";
 
 const Sidebar = ({
   fileName,
@@ -90,10 +90,10 @@ const Sidebar = ({
       let api_url = ""
       switch(problem) {
         case "classification":
-          api_url = "https://tiktokers.onrender.com/train"
+          api_url = "http://localhost:5001/train"
           break;
         case "regression":
-          api_url = "https://tiktokers.onrender.com/train/linreg"
+          api_url = "http://localhost:5001/train/linreg"
           break;
         default:
           alert("Select ML problem")

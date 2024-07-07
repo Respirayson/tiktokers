@@ -348,7 +348,6 @@ def start_app():
         def on_join(data):
             room = data['room']
             join_room(room)
-            emit('status', {'msg': f'Joined room: {room}'}, room=room)
 
         logger.info("Running FlaskServer")
         return app, socketio
