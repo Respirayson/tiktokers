@@ -1,6 +1,6 @@
-import eventlet 
+import eventlet
 
-eventlet.monkey_patch() 
+eventlet.monkey_patch()
 
 from flask import Flask, request, send_file, jsonify
 from flask_restful import reqparse, abort, Api, Resource
@@ -38,13 +38,19 @@ from routes.explorationapi import (
     SmoteHandler,
     UpdateHandler,
 )
-from routes.preprocessingapi import EncodeHandler, ScaleHandler, SelectFeaturesHandler, DropColumns
+from routes.preprocessingapi import (
+    EncodeHandler,
+    ScaleHandler,
+    SelectFeaturesHandler,
+    DropColumns,
+)
 from logging.handlers import RotatingFileHandler
 from common import settings
 from pathlib import Path
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import mean_absolute_error, r2_score, accuracy_score
 
 load_dotenv()
 logger = logging.getLogger()
@@ -78,17 +84,17 @@ class ConfigurableNN(nn.Module):
         layers = []
         prev_size = input_size
         for layer in layers_config:
-            if layer['name'] == 'Linear':
-                layers.append(nn.Linear(prev_size, int(layer['units'])))
-                prev_size = int(layer['units'])
-            elif layer['name'] == 'ReLU':
+            if layer["name"] == "Linear":
+                layers.append(nn.Linear(prev_size, int(layer["units"])))
+                prev_size = int(layer["units"])
+            elif layer["name"] == "ReLU":
                 layers.append(nn.ReLU())
-            elif layer['name'] == 'LeakyReLU':
+            elif layer["name"] == "LeakyReLU":
                 layers.append(nn.LeakyReLU())
-            elif layer['name'] == 'BatchNorm':
+            elif layer["name"] == "BatchNorm":
                 layers.append(nn.BatchNorm1d(prev_size))
-            elif layer['name'] == 'Dropout':
-                layers.append(nn.Dropout(float(layer['rate'])))
+            elif layer["name"] == "Dropout":
+                layers.append(nn.Dropout(float(layer["rate"])))
             # Add other layers as needed
         layers.append(nn.Linear(prev_size, num_classes))  # Output layer
         self.model = nn.Sequential(*layers)
@@ -97,25 +103,25 @@ class ConfigurableNN(nn.Module):
         x = torch.flatten(x, 1)
         return self.model(x)
 
+
 class ConfigurableLinRegNN(nn.Module):
     def __init__(self, input_size, layers_config):
         super(ConfigurableLinRegNN, self).__init__()
         layers = []
         prev_size = input_size
         for layer in layers_config:
-            if layer['name'] == 'Linear':
-                layers.append(nn.Linear(prev_size, int(layer['units'])))
-                prev_size = int(layer['units'])
-            elif layer['name'] == 'ReLU':
+            if layer["name"] == "Linear":
+                layers.append(nn.Linear(prev_size, int(layer["units"])))
+                prev_size = int(layer["units"])
+            elif layer["name"] == "ReLU":
                 layers.append(nn.ReLU())
-            elif layer['name'] == 'LeakyReLU':
+            elif layer["name"] == "LeakyReLU":
                 layers.append(nn.LeakyReLU())
-            elif layer['name'] == 'BatchNorm':
+            elif layer["name"] == "BatchNorm":
                 layers.append(nn.BatchNorm1d(prev_size))
-            elif layer['name'] == 'Dropout':
-                layers.append(nn.Dropout(float(layer['rate'])))
-            # Add other layers as needed
-        layers.append(nn.Linear(prev_size, 1))  # Adjust for single value
+            elif layer["name"] == "Dropout":
+                layers.append(nn.Dropout(float(layer["rate"])))
+        layers.append(nn.Linear(prev_size, 1))
         self.model = nn.Sequential(*layers)
 
     def forward(self, x):
@@ -123,7 +129,16 @@ class ConfigurableLinRegNN(nn.Module):
         return self.model(x)
 
 
-def train_model(file_path, target_column, selected_columns, layers_config, epochs, learning_rate, grad_clipping, room):
+def train_model(
+    file_path,
+    target_column,
+    selected_columns,
+    layers_config,
+    epochs,
+    learning_rate,
+    grad_clipping,
+    room,
+):
     try:
         df = pd.read_csv(file_path)
         df = df[selected_columns + [target_column]]
@@ -140,15 +155,26 @@ def train_model(file_path, target_column, selected_columns, layers_config, epoch
         num_classes = len(np.unique(y))
 
         if np.max(y) >= num_classes:
-            raise ValueError(f"Target value {np.max(y)} is out of bounds for {num_classes} classes.")
+            raise ValueError(
+                f"Target value {np.max(y)} is out of bounds for {num_classes} classes."
+            )
 
         model = ConfigurableNN(input_size, layers_config, num_classes)
         criterion = nn.CrossEntropyLoss()  # Use CrossEntropyLoss for multi-class
         optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42
+        )
 
-        train_loader = DataLoader(TensorDataset(torch.tensor(X_train, dtype=torch.float32), torch.tensor(y_train, dtype=torch.long)), batch_size=64, shuffle=True)
+        train_loader = DataLoader(
+            TensorDataset(
+                torch.tensor(X_train, dtype=torch.float32),
+                torch.tensor(y_train, dtype=torch.long),
+            ),
+            batch_size=64,
+            shuffle=True,
+        )
 
         for epoch in range(epochs):
             model.train()
@@ -161,57 +187,103 @@ def train_model(file_path, target_column, selected_columns, layers_config, epoch
                     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                 optimizer.step()
 
-            socketio.emit('training_progress', {'epoch': epoch + 1, 'loss': loss.item()}, room=room)
+            socketio.emit(
+                "training_progress",
+                {"epoch": epoch + 1, "loss": loss.item()},
+                room=room,
+            )
+            socketio.sleep(0)
 
         model.eval()
         with torch.no_grad():
-            y_pred = model(torch.tensor(X_test, dtype=torch.float32)).argmax(dim=1).numpy()
+            y_pred = (
+                model(torch.tensor(X_test, dtype=torch.float32)).argmax(dim=1).numpy()
+            )
+
+        accuracy = float(accuracy_score(y_test, y_pred))
 
         cm = confusion_matrix(y_test, y_pred)
         labels = label_encoder.inverse_transform(sorted(np.unique(y_test)))
         plt.figure(figsize=(10, 7))
-        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=labels, yticklabels=labels)
-        plt.xlabel('Predicted')
-        plt.ylabel('True')
-        plt.title('Confusion Matrix')
+        sns.heatmap(
+            cm,
+            annot=True,
+            fmt="d",
+            cmap="Blues",
+            xticklabels=labels,
+            yticklabels=labels,
+        )
+        plt.xlabel("Predicted")
+        plt.ylabel("True")
+        plt.title("Confusion Matrix")
 
         buffer = BytesIO()
         plt.savefig(buffer, format="png")
         buffer.seek(0)
-        confusion_matrix_image = base64.b64encode(buffer.getvalue()).decode('utf-8')
+        confusion_matrix_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
         plt.close()
-        
-        filename = secure_filename(uuid.uuid4().hex)
-        torch.save(model.state_dict(), f'models/{filename}.pth')
 
-        socketio.emit('training_complete', {'message': 'Training complete!', 'confusion_matrix': confusion_matrix_image, 'filename': f'{filename}.pth'}, room=room)
+        filename = secure_filename(uuid.uuid4().hex)
+        torch.save(model.state_dict(), f"models/{filename}.pth")
+
+        socketio.emit(
+            "training_complete",
+            {
+                "message": "Training complete!",
+                "confusion_matrix": confusion_matrix_image,
+                "filename": f"{filename}.pth",
+                "accuracy": accuracy,
+            },
+            room=room,
+        )
 
     except Exception as e:
         logger.error(f"Training error: {e}")
         traceback.print_exc()
-        socketio.emit('training_error', {'message': str(e)}, room=room)
+        socketio.emit("training_error", {"message": str(e)}, room=room)
 
-def train_model_lin_reg(file_path, target_column, selected_columns, layers_config, epochs, learning_rate, grad_clipping, room):
+
+def train_model_lin_reg(
+    file_path,
+    target_column,
+    selected_columns,
+    layers_config,
+    epochs,
+    learning_rate,
+    grad_clipping,
+    room,
+):
     try:
         df = pd.read_csv(file_path)
         df = df[selected_columns + [target_column]]
         df = pd.get_dummies(df)
 
-        X = df.drop(columns=[target_column]).astype('float32').values
-        y = df[target_column].astype('float32').values
+        X = df.drop(columns=[target_column]).astype("float32").values
+        y = df[target_column].astype("float32").values
 
         input_size = X.shape[1]
 
-        model = ConfigurableLinRegNN(input_size, layers_config) # Input fields batch_norm and dropout later
+        model = ConfigurableLinRegNN(
+            input_size, layers_config
+        )  # Input fields batch_norm and dropout later
         criterion = nn.MSELoss()  # Use Mean Squared Error for Linear Regression
         optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42
+        )
+
         y_train = y_train.reshape(-1, 1)
         y_test = y_test.reshape(-1, 1)
 
-        train_loader = DataLoader(TensorDataset(torch.tensor(X_train, dtype=torch.float32), torch.tensor(y_train, dtype=torch.float32)), batch_size=64, shuffle=True)
+        train_loader = DataLoader(
+            TensorDataset(
+                torch.tensor(X_train, dtype=torch.float32),
+                torch.tensor(y_train, dtype=torch.float32),
+            ),
+            batch_size=64,
+            shuffle=True,
+        )
 
         for epoch in range(epochs):
             model.train()
@@ -224,77 +296,125 @@ def train_model_lin_reg(file_path, target_column, selected_columns, layers_confi
                     torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                 optimizer.step()
 
-            socketio.emit('training_progress', {'epoch': epoch + 1, 'loss': loss.item()}, room=room)
+            socketio.emit(
+                "training_progress",
+                {"epoch": epoch + 1, "loss": loss.item()},
+                room=room,
+            )
+            socketio.sleep(0)
 
         model.eval()
         with torch.no_grad():
             y_pred = model(torch.tensor(X_test, dtype=torch.float32)).numpy()
-            
-        filename = secure_filename(uuid.uuid4().hex)
-        torch.save(model.state_dict(), f'models/{filename}.pth')
 
-        socketio.emit('training_complete', {'message': 'Training complete!', 'filename': f'{filename}.pth'}, room=room)
+        # Calculate accuracy metrics
+        mae = mean_absolute_error(y_test, y_pred)
+        r2 = r2_score(y_test, y_pred)
+
+        filename = secure_filename(uuid.uuid4().hex)
+        torch.save(model.state_dict(), f"models/{filename}.pth")
+
+        socketio.emit(
+            "training_complete",
+            {
+                "message": "Training complete!",
+                "filename": f"{filename}.pth",
+                "mae": float(mae),
+                "r2": float(r2),
+            },
+            room=room,
+        )
 
     except Exception as e:
         logger.error(f"Training error: {e}")
         traceback.print_exc()
-        socketio.emit('training_error', {'message': str(e)}, room=room)
+        socketio.emit("training_error", {"message": str(e)}, room=room)
+
 
 class TrainModelHandler(Resource):
     def post(self):
         data = request.json
-        filename = data['filename']
-        target_column = data['target_column']
-        selected_columns = data['selected_columns']
-        layers_config = data['hidden_layers']
-        epochs = data['epochs']
-        learning_rate = data['learning_rate']
-        grad_clipping = data['grad_clipping']
+        filename = data["filename"]
+        target_column = data["target_column"]
+        selected_columns = data["selected_columns"]
+        layers_config = data["hidden_layers"]
+        epochs = data["epochs"]
+        learning_rate = data["learning_rate"]
+        grad_clipping = data["grad_clipping"]
 
         file_path = os.path.join("data", filename)
 
         # Join the room based on filename
         room = filename
 
-        thread = threading.Thread(target=train_model, args=(file_path, target_column, selected_columns, layers_config, epochs, learning_rate, grad_clipping, room))
-        thread.start()
+        # thread = threading.Thread(
+        #     target=train_model,
+        #     args=(
+        #         file_path,
+        #         target_column,
+        #         selected_columns,
+        #         layers_config,
+        #         epochs,
+        #         learning_rate,
+        #         grad_clipping,
+        #         room,
+        #     ),
+        # )
+        # thread.start()
+        socketio.start_background_task(train_model, file_path, target_column, selected_columns, layers_config, epochs, learning_rate, grad_clipping, room)
         return jsonify({"status": "success", "message": "Model training started."})
+
 
 class TrainLinRegModelHandler(Resource):
     def post(self):
         data = request.json
-        filename = data['filename']
-        target_column = data['target_column']
-        selected_columns = data['selected_columns']
-        hidden_layers = data['hidden_layers']
-        epochs = data['epochs']
-        learning_rate = data['learning_rate']
-        grad_clipping = data['grad_clipping']
-        
+        filename = data["filename"]
+        target_column = data["target_column"]
+        selected_columns = data["selected_columns"]
+        hidden_layers = data["hidden_layers"]
+        epochs = data["epochs"]
+        learning_rate = data["learning_rate"]
+        grad_clipping = data["grad_clipping"]
+
         file_path = os.path.join("data", filename)
 
         # Join the room based on filename
         room = filename
 
-        thread = threading.Thread(target=train_model_lin_reg, args=(file_path, target_column, selected_columns, hidden_layers, epochs, learning_rate, grad_clipping, room))
-        thread.start()
+        # thread = threading.Thread(
+        #     target=train_model_lin_reg,
+        #     args=(
+        #         file_path,
+        #         target_column,
+        #         selected_columns,
+        #         hidden_layers,
+        #         epochs,
+        #         learning_rate,
+        #         grad_clipping,
+        #         room,
+        #     ),
+        # )
+        # thread.start()
+        socketio.start_background_task(train_model_lin_reg, file_path, target_column, selected_columns, hidden_layers, epochs, learning_rate, grad_clipping, room)
         return jsonify({"status": "success", "message": "Model training started."})
-    
+
+
 class ExportModel(Resource):
     def post(self):
         try:
             data = request.json
-            filename = data['filename']
-            file_path = os.path.join('models', filename)
+            filename = data["filename"]
+            file_path = os.path.join("models", filename)
             return send_file(file_path, as_attachment=True)
         except Exception as e:
             return jsonify(
                 {"message": f"Exception Occured: {e}", "status": "unsuccessful"}
             )
 
+
 class CheckApiService(Resource):
     def get(self):
-        return jsonify({ "message": "API Service is Active. Welcome to MLBB!" })
+        return jsonify({"message": "API Service is Active. Welcome to MLBB!"})
 
 
 def start_app():
@@ -313,21 +433,6 @@ def start_app():
 
         api = Api(app)
         socketio.init_app(app, cors_allowed_origins="*", async_mode="eventlet")
-
-        # conn = psycopg2.connect(
-        #     host=os.getenv("DB_HOST"),
-        #     dbname=os.getenv("DATABASE"),
-        #     user=os.getenv("DB_USERNAME"),
-        #     password=os.getenv("DB_PASSWORD"),
-        #     port=os.getenv("DB_PORT"),
-        # )
-
-        # # Test the db connection
-        # cur = conn.cursor()
-        # cur.execute("SELECT 1;")
-        # logger.info("Testing the database connection " + str(cur.fetchall()))
-        # cur.close()
-        # conn.close()
 
         if not os.path.exists("models"):
             os.makedirs("models")
@@ -361,7 +466,7 @@ def start_app():
 
         @socketio.on("join")
         def on_join(data):
-            room = data['room']
+            room = data["room"]
             join_room(room)
 
         logger.info("Running FlaskServer")
