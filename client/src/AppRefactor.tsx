@@ -38,6 +38,8 @@ function AppRefactor() {
     const [problem, setProblem] = useState<string>("");
     const [learningRate, setLearningRate] = useState<number>(0.001);
     const [gradClipping, setGradClipping] = useState<boolean>(false);
+    const [clusters, setClusters] = useState<number>(10);
+    const [tolerance, setTolerance] = useState<number>(0.0001);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [statistics, setStatistics] = useState<Array<StatisticData<object>>>(
         []
@@ -133,6 +135,9 @@ function AppRefactor() {
             toast.success("Training complete!");
             setTrainedModelFilename(data.filename)
             setConfusionMatrix(data.confusion_matrix);
+            if (problem === "kmeans") {
+                setTrainingProgress(100);
+            }
         });
 
         socket.on("training_error", (data: any) => {
@@ -197,6 +202,10 @@ function AppRefactor() {
                             setLearningRate={setLearningRate}
                             gradClipping={gradClipping}
                             setGradClipping={setGradClipping}
+                            tolerance={tolerance}
+                            setTolerance={setTolerance}
+                            clusters={clusters}
+                            setClusters={setClusters}
                         />
                     </div>
                 </ResizablePanel>
@@ -284,7 +293,7 @@ function AppRefactor() {
                                         <Button
                                             variant="default"
                                             className="ml-auto text-center font-semibold"
-                                            disabled={currentEpoch < epochs}
+                                            disabled={currentEpoch < epochs && trainingProgress < 100}
                                             onClick={handleExportTrainingModel}
                                         >
                                             Export model
@@ -297,9 +306,15 @@ function AppRefactor() {
                                                 style={{ width: `${trainingProgress}%` }}
                                             ></div>
                                         </div>
-                                        <div className="text-center mt-2">
-                                            Epoch: {currentEpoch} - Loss: {currentLoss.toFixed(4)}
-                                        </div>
+                                        {problem === "kmeans" ? (
+                                            <div className="text-center mt-2">
+                                                Epoch: {currentEpoch}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center mt-2">
+                                                Epoch: {currentEpoch} - Loss: {currentLoss.toFixed(4)}
+                                            </div>
+                                        )}
                                         {confusionMatrix && (
                                             <div className="w-full mt-4">
                                                 <img
