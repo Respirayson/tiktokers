@@ -14,7 +14,7 @@ import { toast } from 'react-toastify'
 import axios from 'axios'
 import OperationsNavBody from './OperationsNavBody'
 
-const BASE_URL = "https://tiktokers.onrender.com";
+const API_URL = import.meta.env.VITE_SERVER_URL;
 
 const SidebarBody = ({
     fileName,
@@ -71,10 +71,10 @@ const SidebarBody = ({
             let api_url = ""
             switch (problem) {
                 case "classification":
-                    api_url = "https://tiktokers.onrender.com/train"
+                    api_url = `${API_URL}/train`
                     break;
                 case "regression":
-                    api_url = "https://tiktokers.onrender.com/train/linreg"
+                    api_url = `${API_URL}/train/linreg`
                     break;
                 default:
                     alert("Select ML problem")
@@ -127,7 +127,7 @@ const SidebarBody = ({
 
         try {
             const response = await axios.post(
-                `${BASE_URL}/${selectedOperation?.value}`,
+                `${API_URL}/${selectedOperation?.value}`,
                 reqBody
             );
             let responseData = response.data;
@@ -149,7 +149,7 @@ const SidebarBody = ({
     // Handle Click
     const handleSaveChanges = async () => {
         try {
-            const response = await axios.post(`${BASE_URL}/update`, {
+            const response = await axios.post(`${API_URL}/update`, {
                 filename: fileName,
                 data: data,
             });

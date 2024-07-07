@@ -25,7 +25,9 @@ import io from "socket.io-client";
 import 'react-toastify/dist/ReactToastify.css'
 import { Button } from "./components/ui/button";
 
-const socket = io("https://tiktokers.onrender.com");
+const API_URL = import.meta.env.VITE_SERVER_URL;
+
+const socket = io(API_URL);
 
 function AppRefactor() {
     const [headers, setHeaders] = useState<Array<string>>([]);
@@ -77,7 +79,7 @@ function AppRefactor() {
 
                         try {
                             const response = await axios.post(
-                                "https://tiktokers.onrender.com/upload",
+                                `${API_URL}/upload`,
                                 formData,
                                 {
                                     headers: {
@@ -154,7 +156,7 @@ function AppRefactor() {
     const handleExportTrainingModel = async () => {
         try {
             const response = await axios.post(
-                "https://tiktokers.onrender.com/export",
+                `${API_URL}/export`,
                 {
                     filename: trainedModelFilename,
                 },
