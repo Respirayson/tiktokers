@@ -31,7 +31,7 @@ import uuid
 from sklearn.cluster import KMeans
 import joblib
 
-os.environ['LOKY_MAX_CPU_COUNT'] = '4'
+os.environ['LOKY_MAX_CPU_COUNT'] = '1'
 
 
 from routes.fileapi import FileHandler
