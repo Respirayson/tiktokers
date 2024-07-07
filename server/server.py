@@ -40,6 +40,7 @@ from common import settings
 from pathlib import Path
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 
 load_dotenv()
 logger = logging.getLogger()
@@ -68,19 +69,24 @@ UPLOAD_FOLDER = "data"
 
 
 class ConfigurableNN(nn.Module):
-    def __init__(self, input_size, hidden_layers, num_classes, batch_norm, dropout):
+    def __init__(self, input_size, layers_config, num_classes):
         super(ConfigurableNN, self).__init__()
         layers = []
         prev_size = input_size
-        for size in hidden_layers:
-            layers.append(nn.Linear(prev_size, size))
-            if batch_norm:
-                layers.append(nn.BatchNorm1d(size))
-            if dropout != 0:
-                layers.append(nn.Dropout(dropout))
-            layers.append(nn.ReLU())
-            prev_size = size
-        layers.append(nn.Linear(prev_size, num_classes))  # Adjust for multi-class
+        for layer in layers_config:
+            if layer['name'] == 'Linear':
+                layers.append(nn.Linear(prev_size, int(layer['units'])))
+                prev_size = int(layer['units'])
+            elif layer['name'] == 'ReLU':
+                layers.append(nn.ReLU())
+            elif layer['name'] == 'LeakyReLU':
+                layers.append(nn.LeakyReLU())
+            elif layer['name'] == 'BatchNorm':
+                layers.append(nn.BatchNorm1d(prev_size))
+            elif layer['name'] == 'Dropout':
+                layers.append(nn.Dropout(float(layer['rate'])))
+            # Add other layers as needed
+        layers.append(nn.Linear(prev_size, num_classes))  # Output layer
         self.model = nn.Sequential(*layers)
 
     def forward(self, x):
@@ -108,7 +114,7 @@ class ConfigurableLinRegNN(nn.Module):
         return self.model(x)
 
 
-def train_model(file_path, target_column, selected_columns, hidden_layers, epochs, batch_norm, dropout, room):
+def train_model(file_path, target_column, selected_columns, layers_config, epochs, room):
     try:
         df = pd.read_csv(file_path)
         df = df[selected_columns + [target_column]]
@@ -117,10 +123,17 @@ def train_model(file_path, target_column, selected_columns, hidden_layers, epoch
         X = df.drop(columns=[target_column]).values
         y = df[target_column].values
 
+        # Encode the target labels
+        label_encoder = LabelEncoder()
+        y = label_encoder.fit_transform(y)
+
         input_size = X.shape[1]
         num_classes = len(np.unique(y))
 
-        model = ConfigurableNN(input_size, hidden_layers, num_classes, batch_norm, dropout)
+        if np.max(y) >= num_classes:
+            raise ValueError(f"Target value {np.max(y)} is out of bounds for {num_classes} classes.")
+
+        model = ConfigurableNN(input_size, layers_config, num_classes)
         criterion = nn.CrossEntropyLoss()  # Use CrossEntropyLoss for multi-class
         optimizer = optim.Adam(model.parameters(), lr=0.001)
 
@@ -144,7 +157,7 @@ def train_model(file_path, target_column, selected_columns, hidden_layers, epoch
             y_pred = model(torch.tensor(X_test, dtype=torch.float32)).argmax(dim=1).numpy()
 
         cm = confusion_matrix(y_test, y_pred)
-        labels = sorted(np.unique(y_test))
+        labels = label_encoder.inverse_transform(sorted(np.unique(y_test)))
         plt.figure(figsize=(10, 7))
         sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=labels, yticklabels=labels)
         plt.xlabel('Predicted')
@@ -220,7 +233,7 @@ class TrainModelHandler(Resource):
         filename = data['filename']
         target_column = data['target_column']
         selected_columns = data['selected_columns']
-        hidden_layers = data['hidden_layers']
+        layers_config = data['hidden_layers']
         epochs = data['epochs']
         dropout = data['dropout']
         batch_norm = data['batchNorm']
@@ -230,7 +243,7 @@ class TrainModelHandler(Resource):
         # Join the room based on filename
         room = filename
 
-        thread = threading.Thread(target=train_model, args=(file_path, target_column, selected_columns, hidden_layers, epochs, batch_norm, dropout, room))
+        thread = threading.Thread(target=train_model, args=(file_path, target_column, selected_columns, layers_config, epochs, room))
         thread.start()
         return jsonify({"status": "success", "message": "Model training started."})
 
@@ -265,6 +278,11 @@ class ExportModel(Resource):
                 {"message": f"Exception Occured: {e}", "status": "unsuccessful"}
             )
 
+class CheckApiService(Resource):
+    def get(self):
+        return jsonify({ "message": "API Service is Active. Welcome to MLBB!" })
+
+
 def start_app():
     try:
         start_logger()
@@ -297,6 +315,10 @@ def start_app():
         # cur.close()
         # conn.close()
 
+        if not os.path.exists("models"):
+            os.makedirs("models")
+
+        api.add_resource(CheckApiService, "/")
         api.add_resource(FileHandler, "/upload")
         api.add_resource(UpdateHandler, "/update")
         api.add_resource(TrainModelHandler, "/train")
