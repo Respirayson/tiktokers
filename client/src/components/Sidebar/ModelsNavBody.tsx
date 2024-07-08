@@ -22,6 +22,7 @@ import {
     SheetTitle,
     SheetTrigger,
   } from "@/components/ui/sheet"
+import { v4 as uuidv4 } from "uuid";
   
 
 const ModelsNavBody = ({
@@ -126,6 +127,62 @@ const ModelsNavBody = ({
             description: "Dropout is a regularization technique that randomly sets a fraction of input units to 0 at each update during training. This prevents overfitting and improves the generalization of the model."
         },
     ];
+
+    const epochInfo = {
+        description: "An epoch means training the neural network with all the training data for one cycle. In an epoch, we use all of the data exactly once.",
+        limit: "Recommended: 30 (due to server constraints)"
+    }
+
+    const iterationsInfo = {
+        description: "The step of computing the centroid and assigning all the points to the cluster based on their distance from the centroid is a single iteration.",
+        limit: "Recommended: 30 (due to server constraints)"
+    }
+
+    const layersInfo = {
+        description: "A layer in a deep learning model is a structure or network topology in the model's architecture, which takes information from the previous layers and then passes it to the next layer.",
+        limit: "Recommended: 2 linear layers (due to server constraints)"
+    }
+
+    const targetInfo = {
+        description: "The column that will be considered as the result of each data point",
+        limit: "Recommended: 1 column (can only have one result)"
+    }
+
+    const columnsInfo = {
+        description: "The columns that are to be considered during the machine learning process.",
+        limit: "Recommended: Up to 10 columns (due to server constraints)"
+    }
+
+    const clustersInfo = {
+        description: "A cluster refers to a collection of data points aggregated together because of certain similarities.",
+        limit: "Recommended: Up to 10 clusters (due to server constraints)"
+    }
+
+    const toleranceInfo = {
+        description: "A value to see if algorithm has converged. If the error is greater than the give tolerance value, continue running the algorithm until it gets below the tolerance value.",
+        limit: "Recommended: 0.0001"
+    }
+
+    const learningRateInfo = {
+        description: "The learning rate is a tuning parameter in an optimization algorithm that determines the step size at each iteration while moving toward a minimum of a loss function.",
+        limit: "Recommended: 0.001"
+    }
+
+    const gradClippingInfo = {
+        description: "Gradient Clipping is a method where the error derivative is changed or clipped to a threshold during backward propagation through the network, and using the clipped gradients to update the weights."
+    }
+
+    const hyperparameter = {
+        epochInfo: epochInfo,
+        iterationsInfo: iterationsInfo,
+        layersInfo: layersInfo,
+        columnsInfo: columnsInfo,
+        targetInfo: targetInfo,
+        clustersInfo: clustersInfo,
+        toleranceInfo: toleranceInfo,
+        learningRateInfo: learningRateInfo,
+        gradClippingInfo: gradClippingInfo,
+    }
     
 
     return (
@@ -138,7 +195,23 @@ const ModelsNavBody = ({
                         </legend>
                         {problem !== "kmeans" && (
                             <div className="grid gap-3">
-                                <Label htmlFor="target-column">Target Column*</Label>
+                                <Sheet>
+                                    <div className="flex flex-row">
+                                        <Label htmlFor="target-column">Target Column*</Label>
+                                        <SheetTrigger className="h-auto w-6">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 50 50">
+                                                <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 25 11 A 3 3 0 0 0 22 14 A 3 3 0 0 0 25 17 A 3 3 0 0 0 28 14 A 3 3 0 0 0 25 11 z M 21 21 L 21 23 L 22 23 L 23 23 L 23 36 L 22 36 L 21 36 L 21 38 L 22 38 L 23 38 L 27 38 L 28 38 L 29 38 L 29 36 L 28 36 L 27 36 L 27 21 L 26 21 L 22 21 L 21 21 z"></path>
+                                            </svg>
+                                        </SheetTrigger>
+                                        <SheetContent>
+                                            <SheetHeader>
+                                                <SheetTitle>Target Column</SheetTitle>
+                                                <SheetDescription>{hyperparameter.targetInfo.description}</SheetDescription>
+                                                <SheetDescription>{hyperparameter.targetInfo.limit}</SheetDescription>
+                                            </SheetHeader>
+                                        </SheetContent>
+                                    </div>
+                                </Sheet>
                                 <Select
                                     onValueChange={setTargetColumn}
                                     value={targetColumn}
@@ -160,7 +233,23 @@ const ModelsNavBody = ({
                             </div>
                         )}
                         <div className="grid gap-3">
-                            <Label htmlFor="selected-columns">Select Column(s)*</Label>
+                            <Sheet>
+                                <div className="flex flex-row">
+                                    <Label htmlFor="selected-columns">Select Column(s)*</Label>
+                                    <SheetTrigger className="h-auto w-6">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 50 50">
+                                            <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 25 11 A 3 3 0 0 0 22 14 A 3 3 0 0 0 25 17 A 3 3 0 0 0 28 14 A 3 3 0 0 0 25 11 z M 21 21 L 21 23 L 22 23 L 23 23 L 23 36 L 22 36 L 21 36 L 21 38 L 22 38 L 23 38 L 27 38 L 28 38 L 29 38 L 29 36 L 28 36 L 27 36 L 27 21 L 26 21 L 22 21 L 21 21 z"></path>
+                                        </svg>
+                                    </SheetTrigger>
+                                    <SheetContent>
+                                        <SheetHeader>
+                                            <SheetTitle>Columns</SheetTitle>
+                                            <SheetDescription>{hyperparameter.columnsInfo.description}</SheetDescription>
+                                            <SheetDescription>{hyperparameter.columnsInfo.limit}</SheetDescription>
+                                        </SheetHeader>
+                                    </SheetContent>
+                                </div>
+                            </Sheet>
                             <MultiSelect
                                 options={columnsList.filter(column => column != targetColumn).map((column) => ({
                                     value: column,
@@ -183,17 +272,65 @@ const ModelsNavBody = ({
                             {problem === "kmeans" ? (
                                 <>
                                     <div className="grid gap-3">
-                                        <Label htmlFor="epochs">Number of Iterations*</Label>
+                                        <Sheet>
+                                            <div className="flex flex-row">
+                                                <Label htmlFor="epochs">Number of Iterations*</Label>
+                                                <SheetTrigger className="h-auto w-6">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 50 50">
+                                                        <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 25 11 A 3 3 0 0 0 22 14 A 3 3 0 0 0 25 17 A 3 3 0 0 0 28 14 A 3 3 0 0 0 25 11 z M 21 21 L 21 23 L 22 23 L 23 23 L 23 36 L 22 36 L 21 36 L 21 38 L 22 38 L 23 38 L 27 38 L 28 38 L 29 38 L 29 36 L 28 36 L 27 36 L 27 21 L 26 21 L 22 21 L 21 21 z"></path>
+                                                    </svg>
+                                                </SheetTrigger>
+                                                <SheetContent>
+                                                    <SheetHeader>
+                                                        <SheetTitle>Iterations</SheetTitle>
+                                                        <SheetDescription>{hyperparameter.iterationsInfo.description}</SheetDescription>
+                                                        <SheetDescription>{hyperparameter.iterationsInfo.limit}</SheetDescription>
+                                                    </SheetHeader>
+                                                </SheetContent>
+                                            </div>
+                                        </Sheet>
                                         <Input id="epochs" type="number" placeholder="10" value={epochs}
                                             onChange={(e) => handleSetEpochs(Number(e.target.value))} />
                                     </div>
                                     <div className="grid gap-3">
-                                        <Label htmlFor="epochs">Number of Clusters*</Label>
+                                        <Sheet>
+                                            <div className="flex flex-row">
+                                                <Label htmlFor="epochs">Number of Clusters*</Label>
+                                                <SheetTrigger className="h-auto w-6">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 50 50">
+                                                        <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 25 11 A 3 3 0 0 0 22 14 A 3 3 0 0 0 25 17 A 3 3 0 0 0 28 14 A 3 3 0 0 0 25 11 z M 21 21 L 21 23 L 22 23 L 23 23 L 23 36 L 22 36 L 21 36 L 21 38 L 22 38 L 23 38 L 27 38 L 28 38 L 29 38 L 29 36 L 28 36 L 27 36 L 27 21 L 26 21 L 22 21 L 21 21 z"></path>
+                                                    </svg>
+                                                </SheetTrigger>
+                                                <SheetContent>
+                                                    <SheetHeader>
+                                                        <SheetTitle>Clusters</SheetTitle>
+                                                        <SheetDescription>{hyperparameter.clustersInfo.description}</SheetDescription>
+                                                        <SheetDescription>{hyperparameter.clustersInfo.limit}</SheetDescription>
+                                                    </SheetHeader>
+                                                </SheetContent>
+                                            </div>
+                                        </Sheet>
                                         <Input id="epochs" type="number" placeholder="10" value={clusters}
                                             onChange={(e) => handleSetClusters(Number(e.target.value))} />
                                     </div>
                                     <div className="grid gap-3">
-                                        <Label htmlFor="epochs">Tolerance*</Label>
+                                        <Sheet>
+                                            <div className="flex flex-row">
+                                                <Label htmlFor="epochs">Tolerance*</Label>
+                                                <SheetTrigger className="h-auto w-6">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 50 50">
+                                                        <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 25 11 A 3 3 0 0 0 22 14 A 3 3 0 0 0 25 17 A 3 3 0 0 0 28 14 A 3 3 0 0 0 25 11 z M 21 21 L 21 23 L 22 23 L 23 23 L 23 36 L 22 36 L 21 36 L 21 38 L 22 38 L 23 38 L 27 38 L 28 38 L 29 38 L 29 36 L 28 36 L 27 36 L 27 21 L 26 21 L 22 21 L 21 21 z"></path>
+                                                    </svg>
+                                                </SheetTrigger>
+                                                <SheetContent>
+                                                    <SheetHeader>
+                                                        <SheetTitle>Tolerance</SheetTitle>
+                                                        <SheetDescription>{hyperparameter.toleranceInfo.description}</SheetDescription>
+                                                        <SheetDescription>{hyperparameter.toleranceInfo.limit}</SheetDescription>
+                                                    </SheetHeader>
+                                                </SheetContent>
+                                            </div>
+                                        </Sheet>
                                         <Input id="epochs" type="number" placeholder="0.0001" value={tolerance}
                                             onChange={(e) => handleSetTolerance(Number(e.target.value))} />
                                     </div>
@@ -201,25 +338,57 @@ const ModelsNavBody = ({
                             ) : (
                                 <>
                                     <div className="grid gap-3">
-                                        <Label htmlFor="epochs">Number of Epochs*</Label>
+                                        <Sheet>
+                                            <div className="flex flex-row">
+                                                <Label htmlFor="epochs">Number of Epochs*</Label>
+                                                <SheetTrigger className="h-auto w-6">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 50 50">
+                                                        <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 25 11 A 3 3 0 0 0 22 14 A 3 3 0 0 0 25 17 A 3 3 0 0 0 28 14 A 3 3 0 0 0 25 11 z M 21 21 L 21 23 L 22 23 L 23 23 L 23 36 L 22 36 L 21 36 L 21 38 L 22 38 L 23 38 L 27 38 L 28 38 L 29 38 L 29 36 L 28 36 L 27 36 L 27 21 L 26 21 L 22 21 L 21 21 z"></path>
+                                                    </svg>
+                                                </SheetTrigger>
+                                                <SheetContent>
+                                                    <SheetHeader>
+                                                        <SheetTitle>Epochs</SheetTitle>
+                                                        <SheetDescription>{hyperparameter.epochInfo.description}</SheetDescription>
+                                                        <SheetDescription>{hyperparameter.epochInfo.limit}</SheetDescription>
+                                                    </SheetHeader>
+                                                </SheetContent>
+                                            </div>
+                                        </Sheet>
                                         <Input id="epochs" type="number" placeholder="10" value={epochs}
                                             onChange={(e) => handleSetEpochs(Number(e.target.value))} />
                                     </div>
                                     <div className="grid gap-3">
-                                        <Label htmlFor="">Choose your layers*</Label>
+                                        <Sheet>
+                                            <div className="flex flex-row">
+                                                <Label htmlFor="">Choose your layers*</Label>
+                                                <SheetTrigger className="h-auto w-6">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 50 50">
+                                                        <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 25 11 A 3 3 0 0 0 22 14 A 3 3 0 0 0 25 17 A 3 3 0 0 0 28 14 A 3 3 0 0 0 25 11 z M 21 21 L 21 23 L 22 23 L 23 23 L 23 36 L 22 36 L 21 36 L 21 38 L 22 38 L 23 38 L 27 38 L 28 38 L 29 38 L 29 36 L 28 36 L 27 36 L 27 21 L 26 21 L 22 21 L 21 21 z"></path>
+                                                    </svg>
+                                                </SheetTrigger>
+                                                <SheetContent>
+                                                    <SheetHeader>
+                                                        <SheetTitle>Layers</SheetTitle>
+                                                        <SheetDescription>{hyperparameter.layersInfo.description}</SheetDescription>
+                                                        <SheetDescription>{hyperparameter.layersInfo.limit}</SheetDescription>
+                                                    </SheetHeader>
+                                                </SheetContent>
+                                            </div>
+                                        </Sheet>
                                         <fieldset className="h-auto overflow-auto w-full grid rounded-lg border p-3">
                                             {layers.map((layer, index) => (
-                                                <Sheet key={index}>
+                                                <Sheet key={`${uuidv4()}-${index}`}>
                                                     <div
-                                                    key={index}
+                                                    key={`${uuidv4()}-${index}`}
                                                     className="flex flex-row justify-between items-center w-full px-5 py-2 hover:bg-gray-100"
                                                 >
                                                     <p>{layer.name}</p>
                                                     <div className="flex flex-row gap-3">
                                             <SheetTrigger className="h-auto w-4">
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 50 50">
-<path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 25 11 A 3 3 0 0 0 22 14 A 3 3 0 0 0 25 17 A 3 3 0 0 0 28 14 A 3 3 0 0 0 25 11 z M 21 21 L 21 23 L 22 23 L 23 23 L 23 36 L 22 36 L 21 36 L 21 38 L 22 38 L 23 38 L 27 38 L 28 38 L 29 38 L 29 36 L 28 36 L 27 36 L 27 21 L 26 21 L 22 21 L 21 21 z"></path>
-</svg>
+                                                <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 25 11 A 3 3 0 0 0 22 14 A 3 3 0 0 0 25 17 A 3 3 0 0 0 28 14 A 3 3 0 0 0 25 11 z M 21 21 L 21 23 L 22 23 L 23 23 L 23 36 L 22 36 L 21 36 L 21 38 L 22 38 L 23 38 L 27 38 L 28 38 L 29 38 L 29 36 L 28 36 L 27 36 L 27 21 L 26 21 L 22 21 L 21 21 z"></path>
+                                            </svg>
                                             </SheetTrigger>
                                             <SheetContent>
                                                 <SheetHeader>
@@ -272,12 +441,43 @@ const ModelsNavBody = ({
                                         </fieldset>
                                     </div>
                                     <div className="grid gap-3">
-                                        <Label htmlFor="dropout">Learning Rate</Label>
+                                        <Sheet>
+                                            <div className="flex flex-row">
+                                                <Label htmlFor="dropout">Learning Rate</Label>
+                                                <SheetTrigger className="h-auto w-6">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 50 50">
+                                                        <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 25 11 A 3 3 0 0 0 22 14 A 3 3 0 0 0 25 17 A 3 3 0 0 0 28 14 A 3 3 0 0 0 25 11 z M 21 21 L 21 23 L 22 23 L 23 23 L 23 36 L 22 36 L 21 36 L 21 38 L 22 38 L 23 38 L 27 38 L 28 38 L 29 38 L 29 36 L 28 36 L 27 36 L 27 21 L 26 21 L 22 21 L 21 21 z"></path>
+                                                    </svg>
+                                                </SheetTrigger>
+                                                <SheetContent>
+                                                    <SheetHeader>
+                                                        <SheetTitle>Learning Rate</SheetTitle>
+                                                        <SheetDescription>{hyperparameter.learningRateInfo.description}</SheetDescription>
+                                                        <SheetDescription>{hyperparameter.learningRateInfo.limit}</SheetDescription>
+                                                    </SheetHeader>
+                                                </SheetContent>
+                                            </div>
+                                        </Sheet>
                                         <Input id="dropout" type="number" min="0" max="1" step="0.001" value={learningRate}
                                             onChange={(e) => handleSetLearningRate(Math.min(Math.max(Number(e.target.value), (0.00001)), 1))} />
                                     </div>
                                     <div className="grid gap-3">
-                                        <Label htmlFor="batchnorm">Gradient Clipping</Label>
+                                        <Sheet>
+                                            <div className="flex flex-row">
+                                                <Label htmlFor="batchnorm">Gradient Clipping</Label>
+                                                <SheetTrigger className="h-auto w-6">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" viewBox="0 0 50 50">
+                                                        <path d="M 25 2 C 12.309295 2 2 12.309295 2 25 C 2 37.690705 12.309295 48 25 48 C 37.690705 48 48 37.690705 48 25 C 48 12.309295 37.690705 2 25 2 z M 25 4 C 36.609824 4 46 13.390176 46 25 C 46 36.609824 36.609824 46 25 46 C 13.390176 46 4 36.609824 4 25 C 4 13.390176 13.390176 4 25 4 z M 25 11 A 3 3 0 0 0 22 14 A 3 3 0 0 0 25 17 A 3 3 0 0 0 28 14 A 3 3 0 0 0 25 11 z M 21 21 L 21 23 L 22 23 L 23 23 L 23 36 L 22 36 L 21 36 L 21 38 L 22 38 L 23 38 L 27 38 L 28 38 L 29 38 L 29 36 L 28 36 L 27 36 L 27 21 L 26 21 L 22 21 L 21 21 z"></path>
+                                                    </svg>
+                                                </SheetTrigger>
+                                                <SheetContent>
+                                                    <SheetHeader>
+                                                        <SheetTitle>Gradient Clipping</SheetTitle>
+                                                        <SheetDescription>{hyperparameter.gradClippingInfo.description}</SheetDescription>
+                                                    </SheetHeader>
+                                                </SheetContent>
+                                            </div>
+                                        </Sheet>
                                         <div className="flex gap-3 items-center">
                                             <Checkbox id="batch-norm" checked={gradClipping}
                                                 onCheckedChange={() => handleSetGradClipping(!gradClipping)} />
