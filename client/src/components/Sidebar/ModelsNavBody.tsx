@@ -141,7 +141,7 @@ const ModelsNavBody = ({
 
     const layersInfo = {
         description: "A layer in a deep learning model is a structure or network topology in the model's architecture, which takes information from the previous layers and then passes it to the next layer.",
-        limit: "Recommended: 2 linear layers (due to server constraints)"
+        limit: "Recommended: 2 linear layers with around 16 hidden units max (due to server constraints)"
     }
 
     const targetInfo = {
