@@ -10,10 +10,11 @@ import base64
 from io import BytesIO
 import seaborn as sns
 import numpy as np
-
+import tracemalloc
 
 load_dotenv()
 matplotlib.use('Agg')
+tracemalloc.start()
 
 UPLOAD_FOLDER = "data"
 ALLOWED_EXTENSIONS = {"csv", "npy"}
