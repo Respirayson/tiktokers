@@ -63,6 +63,13 @@ function AppRefactor() {
     const csvUpload = async (files: FileList | null) => {
         if (files) {
             const file = files[0];
+
+            const filesize = file.size / 1024 / 1024;
+            if (filesize > 2) {
+                toast.error("File size should be less than 2MB");
+                return;
+            }
+
             setIsLoading(true);
             if (file) {
                 Papa.parse<File, Papa.LocalFile>(file, {
