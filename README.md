@@ -79,3 +79,8 @@ python server.py
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) 
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=JavaScript&logoColor=white) 
 ![Python](https://img.shields.io/badge/Python-007ACC?style=for-the-badge&logo=python&logoColor=yellow)
+
+## Deployment
+Frontend: https://tiktokers-gamma.vercel.app/
+
+Backend: https://tiktokers.onrender.com/
