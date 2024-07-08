@@ -164,7 +164,6 @@ function AppRefactor() {
             socket.off("training_progress");
             socket.off("training_complete");
             socket.off("training_error");
-            socket.off("status");
         };
     }, [epochs, problem]);
 

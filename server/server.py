@@ -3,24 +3,21 @@ import eventlet
 eventlet.monkey_patch()
 
 from flask import Flask, request, send_file, jsonify
-from flask_restful import reqparse, abort, Api, Resource
+from flask_restful import Api, Resource
 from flask_cors import CORS
-from flask_socketio import SocketIO, emit, join_room
+from flask_socketio import SocketIO, join_room
 from werkzeug.utils import secure_filename
 
 from dotenv import load_dotenv
 import os
-import psycopg2
 import logging
 import sys
 import traceback
-import time
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import pandas as pd
-import threading
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -60,7 +57,6 @@ from sklearn.metrics import mean_absolute_error, r2_score, accuracy_score
 load_dotenv()
 logger = logging.getLogger()
 socketio = SocketIO()
-
 
 def start_logger():
     logformatter = logging.Formatter(settings.LOG_FORMAT)
@@ -349,7 +345,7 @@ def train_model_lin_reg(
         residual_buffer.seek(0)
         residual_image = base64.b64encode(residual_buffer.getvalue()).decode('utf-8')
         plt.close()
-        
+
         filename = secure_filename(uuid.uuid4().hex)
         torch.save(model.state_dict(), f"models/{filename}.pth")
 

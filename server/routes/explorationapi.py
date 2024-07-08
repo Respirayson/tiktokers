@@ -8,7 +8,6 @@ from imblearn.under_sampling import RandomUnderSampler
 from imblearn.over_sampling import RandomOverSampler, SMOTE
 from sklearn.impute import SimpleImputer
 from werkzeug.utils import secure_filename
-from routes.fileapi import FileHandler
 
 load_dotenv()
 
