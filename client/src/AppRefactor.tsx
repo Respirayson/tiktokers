@@ -143,6 +143,7 @@ function AppRefactor() {
             setR2(data.r2);
             if (problem === "kmeans") {
                 setTrainingProgress(100);
+                setCurrentLoss(0)
             }
         });
 
