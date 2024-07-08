@@ -22,7 +22,7 @@ import {
     SheetTitle,
     SheetTrigger,
   } from "@/components/ui/sheet"
-import { v4 as uuidv4 } from "uuid";
+import { useState } from "react"
   
 
 const ModelsNavBody = ({
@@ -72,6 +72,7 @@ const ModelsNavBody = ({
     handleRateChange: (id: number, rate: number) => void;
     problem: string;
 }) => {
+    const [layerCounter, setLayerCounter] = useState<number>(0);
     const renderItem = (item: { name: string; id: number; units?: number, rate?: number }) => (
         <SortableList.Item id={item.id}>
           <div className="flex flex-row items-center">
@@ -378,9 +379,9 @@ const ModelsNavBody = ({
                                         </Sheet>
                                         <fieldset className="h-auto overflow-auto w-full grid rounded-lg border p-3">
                                             {layers.map((layer, index) => (
-                                                <Sheet key={`${uuidv4()}-${index}`}>
+                                                <Sheet key={index}>
                                                     <div
-                                                    key={`${uuidv4()}-${index}`}
+                                                    key={index}
                                                     className="flex flex-row justify-between items-center w-full px-5 py-2 hover:bg-gray-100"
                                                 >
                                                     <p>{layer.name}</p>
@@ -400,7 +401,9 @@ const ModelsNavBody = ({
                                                     className="h-auto"
                                                     type="button"
                                                     onClick={() => {
-                                                        setItems([...items, { name: layer.name, id: items.length + 1 }]);
+                                                        const newCounter = layerCounter + 1
+                                                        setLayerCounter(newCounter)
+                                                        setItems([...items, { name: layer.name, id: newCounter }]);
                                                     }}
                                                     >
                                                         <svg
