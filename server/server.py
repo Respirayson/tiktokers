@@ -31,7 +31,7 @@ import uuid
 from sklearn.cluster import KMeans
 import joblib
 
-os.environ['LOKY_MAX_CPU_COUNT'] = '1'
+os.environ["LOKY_MAX_CPU_COUNT"] = "1"
 
 
 from routes.fileapi import FileHandler
@@ -227,9 +227,9 @@ def train_model(
         buffer.seek(0)
         confusion_matrix_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
         plt.close()
-        
-        filename = secure_filename(f'{uuid.uuid4().hex}.pth')
-        file_path = os.path.join('models', filename)
+
+        filename = secure_filename(f"{uuid.uuid4().hex}.pth")
+        file_path = os.path.join("models", filename)
         torch.save(model.state_dict(), file_path)
 
         socketio.emit(
@@ -317,6 +317,39 @@ def train_model_lin_reg(
         mae = mean_absolute_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
 
+        # Visualizations
+        # Scatter Plot with Regression Line
+        plt.figure(figsize=(10, 6))
+        plt.scatter(X_test[:, 0], y_test, color='blue', label='Actual Data')
+        
+        # Sort the X_test and corresponding y_pred for proper line plotting
+        sorted_indices = np.argsort(X_test[:, 0], axis=0)
+        plt.plot(X_test[sorted_indices, 0], y_pred[sorted_indices], color='red', label='Regression Line')
+        
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.title('Scatter Plot with Regression Line')
+        plt.legend()
+        scatter_buffer = BytesIO()
+        plt.savefig(scatter_buffer, format="png")
+        scatter_buffer.seek(0)
+        scatter_image = base64.b64encode(scatter_buffer.getvalue()).decode('utf-8')
+        plt.close()
+
+        # Residual Plot
+        residuals = y_test - y_pred
+        plt.figure(figsize=(10, 6))
+        plt.scatter(y_pred, residuals, color='purple')
+        plt.hlines(0, min(y_pred), max(y_pred), colors='gray', linestyles='dashed')
+        plt.xlabel('Predicted Values')
+        plt.ylabel('Residuals')
+        plt.title('Residual Plot')
+        residual_buffer = BytesIO()
+        plt.savefig(residual_buffer, format="png")
+        residual_buffer.seek(0)
+        residual_image = base64.b64encode(residual_buffer.getvalue()).decode('utf-8')
+        plt.close()
+        
         filename = secure_filename(uuid.uuid4().hex)
         torch.save(model.state_dict(), f"models/{filename}.pth")
 
@@ -327,44 +360,48 @@ def train_model_lin_reg(
                 "filename": f"{filename}.pth",
                 "mae": float(mae),
                 "r2": float(r2),
+                "scatter_plot": scatter_image,
+                "residual_plot": residual_image,
             },
             room=room,
         )
 
-            
-        filename = secure_filename(f'{uuid.uuid4().hex}.pth')
-        file_path = os.path.join('models', filename)
-        torch.save(model.state_dict(), file_path)
-
-        socketio.emit('training_complete', {'message': 'Training complete!', 'filename': filename}, room=room)
-
     except Exception as e:
         logger.error(f"Training error: {e}")
         traceback.print_exc()
-        socketio.emit('training_error', {'message': str(e)}, room=room)
+        socketio.emit("training_error", {"message": str(e)}, room=room)
 
-def train_model_k_means(file_path, selected_columns, clusters, iterations, tolerance, room):
+
+def train_model_k_means(
+    file_path, selected_columns, clusters, iterations, tolerance, room
+):
     try:
         df = pd.read_csv(file_path)
         df = df[selected_columns]
         df = pd.get_dummies(df)
-        
-        X = df.astype('float32').values
-        
+
+        X = df.astype("float32").values
+
         old_stdout = sys.stdout
         sys.stdout = StreamToLogger(room)
-        
+
         try:
-            kmeans = KMeans(n_clusters=clusters, max_iter=iterations, tol=tolerance, verbose=1).fit(X)
+            kmeans = KMeans(
+                n_clusters=clusters, max_iter=iterations, tol=tolerance, verbose=1
+            ).fit(X)
         finally:
-            sys.stdout = old_stdout # Reset stdout
-        
-        filename = secure_filename(f'{uuid.uuid4().hex}.joblib')
-        file_path = os.path.join('models', filename)
+            sys.stdout = old_stdout  # Reset stdout
+
+        filename = secure_filename(f"{uuid.uuid4().hex}.joblib")
+        file_path = os.path.join("models", filename)
         joblib.dump(kmeans, file_path)
-        
-        socketio.emit('training_complete', {'message': 'Training complete!', 'filename': filename}, room=room)
-    
+
+        socketio.emit(
+            "training_complete",
+            {"message": "Training complete!", "filename": filename},
+            room=room,
+        )
+
     except Exception as e:
         logger.error(f"Training error: {e}")
         traceback.print_exc()
@@ -401,7 +438,17 @@ class TrainModelHandler(Resource):
         #     ),
         # )
         # thread.start()
-        socketio.start_background_task(train_model, file_path, target_column, selected_columns, layers_config, epochs, learning_rate, grad_clipping, room)
+        socketio.start_background_task(
+            train_model,
+            file_path,
+            target_column,
+            selected_columns,
+            layers_config,
+            epochs,
+            learning_rate,
+            grad_clipping,
+            room,
+        )
         return jsonify({"status": "success", "message": "Model training started."})
 
 
@@ -435,26 +482,47 @@ class TrainLinRegModelHandler(Resource):
         #     ),
         # )
         # thread.start()
-        socketio.start_background_task(train_model_lin_reg, file_path, target_column, selected_columns, hidden_layers, epochs, learning_rate, grad_clipping, room)
+        socketio.start_background_task(
+            train_model_lin_reg,
+            file_path,
+            target_column,
+            selected_columns,
+            hidden_layers,
+            epochs,
+            learning_rate,
+            grad_clipping,
+            room,
+        )
         return jsonify({"status": "success", "message": "Model training started."})
+
 
 class TrainKMeansModelHandler(Resource):
     def post(self):
         data = request.json
-        filename = data['filename']
-        selected_columns = data['selected_columns']
-        clusters = data['clusters']
-        iterations = data['epochs']
-        tolerance = data['tolerance']
-        
+        filename = data["filename"]
+        selected_columns = data["selected_columns"]
+        clusters = data["clusters"]
+        iterations = data["epochs"]
+        tolerance = data["tolerance"]
+
         file_path = os.path.join("data", filename)
 
         # Join the room based on filename
         room = filename
-        
-        thread = threading.Thread(target=train_model_k_means, args=(file_path, selected_columns, clusters, iterations, tolerance, room))
-        thread.start()
+
+        # thread = threading.Thread(target=train_model_k_means, args=(file_path, selected_columns, clusters, iterations, tolerance, room))
+        socketio.start_background_task(
+            train_model_k_means,
+            file_path,
+            selected_columns,
+            clusters,
+            iterations,
+            tolerance,
+            room,
+        )
+        # thread.start()
         return jsonify({"status": "success", "message": "Model training started."})
+
 
 class StreamToLogger(io.StringIO):
     def __init__(self, room):
@@ -468,7 +536,10 @@ class StreamToLogger(io.StringIO):
         for line in lines:
             if line.strip():
                 self.iterations += 1
-                socketio.emit('training_progress', {'epoch': self.iterations}, room=self.room)
+                socketio.emit(
+                    "training_progress", {"epoch": self.iterations}, room=self.room
+                )
+                socketio.sleep(0)
 
 
 class ExportModel(Resource):

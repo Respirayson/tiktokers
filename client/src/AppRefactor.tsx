@@ -53,6 +53,8 @@ function AppRefactor() {
     const [accuracy, setAccuracy] = useState<number | null>(null);
     const [mae, setMae] = useState<number | null>(null);
     const [r2, setR2] = useState<number | null>(null);
+    const [scatterPlot, setScatterPlot] = useState<string | null>(null);
+    const [residualPlot, setResidualPlot] = useState<string | null>(null);
     const [selectedButton, setSelectedButton] = useState("Data");
     const [trainedModelFilename, setTrainedModelFilename] = useState("");
 
@@ -141,6 +143,8 @@ function AppRefactor() {
             setAccuracy(data.accuracy);
             setMae(data.mae);
             setR2(data.r2);
+            setScatterPlot(data.scatter_plot);
+            setResidualPlot(data.residual_plot);
             if (problem === "kmeans") {
                 setTrainingProgress(100);
                 setCurrentLoss(0)
@@ -162,7 +166,7 @@ function AppRefactor() {
             socket.off("training_error");
             socket.off("status");
         };
-    }, [epochs]);
+    }, [epochs, problem]);
 
     // Handle Export Model
     const handleExportTrainingModel = async () => {
@@ -330,7 +334,28 @@ function AppRefactor() {
                                                 />
                                             </div>
                                         )}
+                                        
+                                        <div className="flex flex-row relative">
 
+                                        {scatterPlot && (
+                                            <div className="w-full mt-4">
+                                                <img
+                                                    src={`data:image/png;base64,${scatterPlot}`}
+                                                    alt="Scatter Plot"
+                                                    />
+                                            </div>
+                                        )}
+
+                                        {residualPlot && (
+                                            <div className="w-full mt-4">
+                                                <img
+                                                    src={`data:image/png;base64,${residualPlot}`}
+                                                    alt="Residual Plot"
+                                                    />
+                                            </div>
+                                        )}
+
+                                        </div>
                                         {accuracy && (
                                             <div className="text-center mt-4">
                                                 Accuracy: {accuracy.toFixed(2)}
