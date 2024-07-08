@@ -16,7 +16,7 @@ App Features:
     CSV Upload 
   <lil> 
   <li> 
-    Data Preprocessing (Encode Categorical Variables, Scale Features, Select Features, Impute Missing Values, Handle Outliers, Oversample, Undersample, SMOTE) 
+    Data Preprocessing (Encode Categorical Variables, Scale Features, Select Features, Impute Missing Values, Handle Outliers, Oversample, Undersample, SMOTE, Dropping Columns) 
   <lil> 
   <li> 
     Classification Modelling 
@@ -24,6 +24,12 @@ App Features:
   <li> 
     Regression Modelling 
   </li> 
+   <li>
+    KMeans Clustering
+   </li>
+   <li>
+    Data, Analytics and Results Visualisation
+   </li>
 </ol> 
 <br/> 
 Libraries used: 
@@ -53,6 +59,11 @@ cd client
 npm install
 npm run dev
  ```
+
+Make sure to include a `.env` file to specify the server URL
+```
+VITE_SERVER_URL=http://localhost:5001
+```
  
 2. Server
  
